@@ -41,10 +41,10 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   useEffect(() => {
     injectStore(dispatch);
 
-    if (!infor._id) {
-      checkAuth();
-      return;
-    }
+    // if (!infor._id) {
+    //   checkAuth();
+    //   return;
+    // }
     setLoading(false);
   }, []);
 

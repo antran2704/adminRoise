@@ -1,6 +1,6 @@
 interface ISelectItem {
-    _id: string | null;
-    title: string;
+    id: string;
+    name: string;
   }
   
   export type { ISelectItem };

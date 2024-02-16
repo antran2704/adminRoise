@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import httpProxy, { ProxyResCallback } from "http-proxy";
-import { getCookie, setCookie } from "cookies-next";
-import { ClientRequest } from "http";
+import { setCookie } from "cookies-next";
 import { IKeyToken } from "~/interface";
 
 const proxy = httpProxy.createProxyServer();
@@ -35,6 +34,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         try {
           const response = JSON.parse(body);
           const status = response.status;
+          
           if (status === 200) {
             const data: IKeyToken = {
               accessToken: response.payload.accessToken.value,

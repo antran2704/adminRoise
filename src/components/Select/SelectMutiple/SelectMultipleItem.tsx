@@ -13,9 +13,10 @@ interface Props {
   data: ISelectItem[];
   selects: ISelectItem[];
   name: string;
-  selectIndex: number;
+  selectIndex?: number;
   show: boolean;
-  onSetSelectIndex: (value: number | null) => void;
+  onSetSelectShow?: (name: string) => void;
+  onSetSelectIndex?: (value: number | null) => void;
   selectItem: (items: ISelectItem, key: string) => void;
   selectAll: (items: ISelectItem[], key: string) => void;
   removeItem: (items: ISelectItem[], id: string, key: string) => void;
@@ -29,6 +30,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
     selects,
     name,
     show,
+    onSetSelectShow,
     selectIndex,
     onSetSelectIndex,
     selectItem,
@@ -39,14 +41,14 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
   const popupRef = useRef<HTMLUListElement>(null);
 
   const onSelect = (select: ISelectItem) => {
-    const isExit = selects.some((item: ISelectItem) => item._id === select._id);
+    const isExit = selects.some((item: ISelectItem) => item.id === select.id);
     if (!isExit) {
       selectItem(select, name);
     } else {
       const newSelect = selects.filter(
-        (item: ISelectItem) => item._id !== select._id
+        (item: ISelectItem) => item.id !== select.id
       );
-      removeItem(newSelect, select._id as string, name);
+      removeItem(newSelect, select.id as string, name);
     }
   };
 
@@ -69,26 +71,38 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
     }
   }, [show]);
   return (
-    <div className={`realtive  ${className ? className : ""} ${show ? "z-[21]" : "z-20"}`}>
+    <div
+      className={`realtive  ${className ? className : ""} ${
+        show ? "z-[21]" : "z-20"
+      }`}
+    >
       <span className="block text-base text-[#1E1E1E] font-medium mb-1">
         {title}
       </span>
-     
+
       <div
         ref={divRef}
         className={`relative flex items-center w-full min-h-[36px] rounded-md px-2 py-1 ${
-          show && "border-[#4f46e5]"
+          show && "border-[#4f46e5] bg-white"
         } border-2 outline-none cursor-pointer z-10`}
       >
         <div
-          onClick={() => onSetSelectIndex(selectIndex)}
+          onClick={() => {
+            if (onSetSelectIndex && selectIndex) {
+              onSetSelectIndex(selectIndex);
+            }
+
+            if (onSetSelectShow) {
+              onSetSelectShow(name);
+            }
+          }}
           className="flex items-center w-full justify-between gap-5"
         >
           {selects.length > 0 && selects.length < data.length && (
             <p className="w-full line-clamp-1 select-none gap-2">
               {selects.map(
                 (item: ISelectItem, index: number) =>
-                  `${item.title} ${index + 1 <= selects.length - 1 ? "," : ""}`
+                  `${item.name} ${index + 1 <= selects.length - 1 ? "," : ""}`
               )}
             </p>
           )}
@@ -107,7 +121,10 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
           <div className="flex items-center gap-2">
             {selects.length > 0 && (
               <MdOutlineClose
-                onClick={onClearAll}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClearAll();
+                }}
                 className="ml-auto w-5 h-7"
               />
             )}
@@ -122,7 +139,7 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
             show
               ? "opacity-100 pointer-events-auto z-50"
               : "opacity-0 pointer-events-none"
-          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md overflow-y-auto shadow-md transition-all ease-linear duration-200`}
+          } scroll left-0 w-full max-h-[160px] bg-white border-2 rounded-md overflow-y-auto shadow-md transition-all ease-linear duration-100`}
         >
           {name !== "default" && (
             <li
@@ -137,19 +154,29 @@ const SelectMultipleItem: FC<Props> = (props: Props) => {
 
           {data.map((item: ISelectItem) => (
             <li
-              key={item._id}
+              key={item.id}
               onClick={() => onSelect(item)}
               className={`w-full text-base ${
-                selects.find(
-                  (select: ISelectItem) => select._id === item._id
-                ) && "bg-gray-200"
+                selects.find((select: ISelectItem) => select.id === item.id) &&
+                "bg-gray-200"
               } px-5 py-1 cursor-pointer transition-all ease-linear duration-100`}
             >
-              {item.title}
+              {item.name}
             </li>
           ))}
         </ul>
       </div>
+
+      {show && (
+        <div
+          onClick={() => {
+            if (onSetSelectShow) {
+              onSetSelectShow(name);
+            }
+          }}
+          className="fixed top-0 right-0 left-0 bottom-0 bg-transparent z-0"
+        ></div>
+      )}
     </div>
   );
 };

@@ -3,72 +3,87 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
 import {
-  ICategorySelect,
-  IObjectCategory,
   ICreateProduct,
   ISelectItem,
   ISpecificationsProduct,
-  ISendProduct,
+  ICategoryProduct,
+  IAttributeProduct,
 } from "~/interface";
 import { deleteImageInSever } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText, InputNumber, InputTextarea } from "~/components/InputField";
-import Tree from "~/components/Tree";
 import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import Gallery from "~/components/Image/Gallery";
 import MultipleValue from "~/components/InputField/MultipleValue";
 import { SelectItem } from "~/components/Select";
-import generalBreadcrumbs from "~/helper/generateBreadcrumb";
-import Specifications from "~/components/Specifications";
 import Loading from "~/components/Loading";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import {
-  createProduct,
-  getAllCategories,
-  getParentCategories,
-  uploadThumbnailProduct,
-} from "~/api-client";
+import { createProduct, uploadThumbnailProduct } from "~/api-client";
+import SelectMultipleItem from "~/components/Select/SelectMutiple/SelectMultipleItem";
 
 const initData: ICreateProduct = {
-  title: "",
+  name: "",
+  seoName: "",
   description: "",
-  shortDescription: "",
-  category: { _id: null, title: "" },
-  categories: [],
-  price: 0,
-  promotion_price: 0,
-  inventory: 0,
-  public: true,
-  thumbnail: null,
-  gallery: [],
+  overview: "",
+  category: null,
+  picture: null,
+  colours: [],
+  sizes: [],
+  images: [],
+  tags: [],
+  isDeleted: false,
+  isHot: true,
+  isNew: true,
+  isShow: true,
+  material: null,
   brand: null,
-  hotProduct: false,
-  options: [],
-  breadcrumbs: [],
-  specifications: [],
-  variants: [],
   sku: null,
-  barcode: null,
-  sold: 0,
+  price: 0,
+  specialPrice: 0,
+  wholesalePrice: 0,
 };
+
+const initCategories: ICategoryProduct[] = [
+  { id: "1", name: "elctron" },
+  { id: "2", name: "clothe" },
+  { id: "3", name: "furniture" },
+];
+
+const initSizes: IAttributeProduct[] = [
+  { id: "1", name: "S" },
+  { id: "2", name: "M" },
+  { id: "3", name: "L" },
+];
+
+const initColours: IAttributeProduct[] = [
+  { id: "1", name: "Red" },
+  { id: "2", name: "Green" },
+  { id: "3", name: "Blue" },
+];
 
 const CreateProductPage = () => {
   const router = useRouter();
 
   const [product, setProduct] = useState<ICreateProduct>(initData);
-  const [categories, setCategories] = useState<IObjectCategory>({});
-  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
-  const [categoriesParent, setCategoriesParent] = useState([]);
-  const [categorySelect, setCategorySelect] = useState<ICategorySelect>({
-    title: null,
-    node_id: null,
-  });
-
-  const [mutipleCategories, setMultipleCategories] = useState<ISelectItem[]>(
-    []
+  const [categories, setCategories] =
+    useState<ICategoryProduct[]>(initCategories);
+  const [selectCategory, setSelectCategory] = useState<ISelectItem | null>(
+    null
   );
+
+  const [sizes, setSizes] = useState<IAttributeProduct[]>(initSizes);
+  const [selectSizes, setSelectSizes] = useState<IAttributeProduct[]>([]);
+  const [colours, setColours] = useState<IAttributeProduct[]>(initColours);
+  const [selectColours, setSelectColours] = useState<IAttributeProduct[]>([]);
+
+  const [showSelect, setShowSelect] = useState<string | null>(null);
+
+  const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
+
+  const [tags, setTags] = useState<ISelectItem[]>([]);
   const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
 
   const [thumbnail, setThumbnail] = useState<string | null>(null);
@@ -83,61 +98,54 @@ const CreateProductPage = () => {
   const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
   const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
-  const onSelectCategory = (title: string | null, node_id: string | null) => {
-    if (!node_id) {
-      toast.info("Choose another Home category ", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+  const changeTags = (name: string, values: ISelectItem[]) => {
+    setTags(values);
+  };
 
+  const onSelectShow = (name: string) => {
+    if (showSelect === name) {
+      setShowSelect(null);
       return;
     }
 
-    const isExit = mutipleCategories.some(
-      (category) => category.title === title
-    );
-
-    if (isExit) {
-      toast.info("Oh, category is exited", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-
-      return;
-    }
-    if (!defaultCategory) {
-      setDefaultCategory(node_id);
-    }
-
-    if (fieldsCheck.includes("categories")) {
-      const newFieldsCheck = handleRemoveCheck(fieldsCheck, "categories");
-      setFieldsCheck(newFieldsCheck);
-    }
-
-    const newItem: ISelectItem = { _id: node_id, title: title as string };
-
-    setCategorySelect({ title, node_id });
-    setMultipleCategories([...mutipleCategories, newItem]);
+    setShowSelect(name);
   };
 
-  const changeMultipleCategories = (name: string, values: ISelectItem[]) => {
-    if (values.length > 0) {
-      const isExit = values.some(
-        (value: ISelectItem) => value._id === defaultCategory
-      );
-
-      if (!isExit) {
-        setDefaultCategory(values[0]._id);
-      }
-    } else {
-      setDefaultCategory(null);
+  const selectAll = (items: ISelectItem[], key: string) => {
+    switch (key) {
+      case "colours":
+        setSelectColours(items as IAttributeProduct[]);
+        break;
+      default:
+        setSelectSizes(items as IAttributeProduct[]);
     }
-    setMultipleCategories(values);
   };
 
-  const onSelectDefaultCategory = useCallback(
-    (value: string) => {
-      setDefaultCategory(value);
+  const selectItem = (items: ISelectItem, name: string) => {
+    switch (name) {
+      case "colours":
+        setSelectColours([...selectColours, items as IAttributeProduct]);
+        break;
+      default:
+        setSelectSizes([...selectSizes, items as IAttributeProduct]);
+    }
+  };
+
+  const removeItem = (items: ISelectItem[], id: string, key: string) => {
+    switch (key) {
+      case "colours":
+        setSelectColours(items as IAttributeProduct[]);
+        break;
+      default:
+        setSelectSizes(items as IAttributeProduct[]);
+    }
+  };
+
+  const onSelectCategory = useCallback(
+    (item: ISelectItem) => {
+      setSelectCategory(item as ICategoryProduct);
     },
-    [mutipleCategories, defaultCategory]
+    [categories, selectCategory]
   );
 
   const changeValue = useCallback(
@@ -253,12 +261,6 @@ const CreateProductPage = () => {
     [gallery, loadingGallery]
   );
 
-  const onUpdateSpecifications = (
-    newSpecifications: ISpecificationsProduct[]
-  ) => {
-    setSpecifications(newSpecifications);
-  };
-
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
     setFieldsCheck(fields);
@@ -272,20 +274,16 @@ const CreateProductPage = () => {
   const handleOnSubmit = async () => {
     const fields = checkData([
       {
-        name: "title",
-        value: product.title,
+        name: "name",
+        value: product.name,
       },
       {
-        name: "shortDescription",
-        value: product.shortDescription,
+        name: "overview",
+        value: product.overview,
       },
       {
         name: "description",
         value: product.description,
-      },
-      {
-        name: "categories",
-        value: mutipleCategories,
       },
       {
         name: "thumbnail",
@@ -301,41 +299,31 @@ const CreateProductPage = () => {
       return;
     }
 
+    const sendTags: string[] = tags.map((tag: ISelectItem) => tag.name);
+
     setLoading(true);
 
     try {
-      let breadcrumbs: string[] = [];
-      if (defaultCategory) {
-        breadcrumbs = generalBreadcrumbs(defaultCategory, categories);
-      } else {
-        breadcrumbs = generalBreadcrumbs(mutipleCategories[0]._id, categories);
-      }
-
-      const categoriesProduct = mutipleCategories.map(
-        (category: ISelectItem) => {
-          return category._id;
-        }
-      );
-
-      const sendData: ISendProduct = {
-        title: product.title,
+      const sendData: ICreateProduct = {
+        name: product.name,
         description: product.description,
-        shortDescription: product.shortDescription,
-        meta_title: product.title,
-        meta_description: product.description,
-        thumbnail,
-        gallery,
-        category: defaultCategory as string,
-        categories: categoriesProduct as string[],
-        breadcrumbs,
-        specifications,
-        price: product.price,
-        promotion_price: product.promotion_price,
-        inventory: product.inventory,
-        public: product.public,
+        overview: product.overview,
+        seoName: product.seoName,
+        brand: product.brand,
         sku: product.sku,
-        barcode: product.barcode,
-        options: [],
+        material: product.material,
+        category: selectCategory,
+        colours: selectColours,
+        tags: sendTags,
+        sizes: selectSizes,
+        isHot: product.isHot,
+        isNew: product.isNew,
+        isShow: product.isShow,
+        images: [],
+        picture: "",
+        price: product.price,
+        specialPrice: product.specialPrice,
+        wholesalePrice: product.wholesalePrice,
       };
 
       const payload = await createProduct(sendData);
@@ -356,117 +344,92 @@ const CreateProductPage = () => {
     }
   };
 
-  const handleGetCategories = async () => {
-    let data: IObjectCategory = {};
-    try {
-      const response = await getAllCategories({ title: "1", childrens: "1" });
-
-      for (const item of response.payload) {
-        const { _id, parent_id, title, childrens, slug } = item;
-        data[_id] = { _id, parent_id, title, childrens, slug };
-      }
-
-      setCategories(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleGetCategoriesParent = async () => {
-    try {
-      const response = await getParentCategories();
-      const data = response.payload.map((item: any) => item._id);
-
-      setCategoriesParent(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    handleGetCategories();
-    handleGetCategoriesParent();
-  }, []);
+  const handleGetCategories = async () => {};
 
   return (
     <FormLayout
-      title="Create Product"
+      title="Tạo sản phẩm"
       backLink="/products"
       onSubmit={handleOnSubmit}
     >
       <div>
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
+        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
           <InputText
-            title="Title"
+            title="Tên sản phẩm"
             width="lg:w-2/4 w-full"
-            value={product.title}
-            error={fieldsCheck.includes("title")}
-            name="title"
-            placeholder="Input product name..."
+            value={product.name}
+            error={fieldsCheck.includes("name")}
+            name="name"
+            placeholder="Tên sản phẩm..."
             getValue={changeValue}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
-          <InputTextarea
-            title="Short description"
+          <InputText
+            title="Seo Name"
             width="lg:w-2/4 w-full"
-            error={fieldsCheck.includes("shortDescription")}
-            value={product.shortDescription}
-            name="shortDescription"
-            placeholder="Input short description about product"
+            value={product.seoName}
+            error={fieldsCheck.includes("seoName")}
+            name="seoName"
+            placeholder="Seo Name..."
+            getValue={changeValue}
+          />
+
+          <InputTextarea
+            title="Tổng quan"
+            width="lg:w-2/4 w-full"
+            error={fieldsCheck.includes("overview")}
+            value={product.overview}
+            name="overview"
+            placeholder="Tổng quan sản phẩm..."
             rows={2}
             getValue={changeValue}
           />
-        </div>
 
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-3">
           <InputTextarea
-            title="Description"
+            title="Mô tả sản phẩm"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("description")}
             value={product.description}
             name="description"
-            placeholder="Input description about product"
+            placeholder="Mô tả sản phẩm..."
             getValue={changeValue}
           />
-        </div>
-
-        <div className="w-full mt-5">
-          <MultipleValue
-            title="Categories"
-            width="lg:w-2/4 w-full"
-            items={mutipleCategories}
-            name="categories"
-            placeholder="Please select a category or categories"
-            readonly={true}
-            error={fieldsCheck.includes("categories")}
-            getAttributes={changeMultipleCategories}
-          />
-
-          <div>
-            {categoriesParent.length > 0 &&
-              Object.keys(categories).length > 0 && (
-                <Tree
-                  categories={categories}
-                  categoriesParent={categoriesParent}
-                  node_id="Home"
-                  parent_id={null}
-                  categorySelect={categorySelect}
-                  onSelect={onSelectCategory}
-                />
-              )}
-          </div>
         </div>
 
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
           <SelectItem
             width="lg:w-2/4 w-full"
-            title="Default category"
+            title="Thư mục sản phẩm"
             name="category"
-            value={defaultCategory ? defaultCategory : ""}
-            onSelect={onSelectDefaultCategory}
-            data={mutipleCategories}
+            value={selectCategory ? (selectCategory.id as string) : ""}
+            onSelect={onSelectCategory}
+            data={categories}
+          />
+
+          <SelectMultipleItem
+            data={colours}
+            name="colours"
+            className="lg:w-2/4 w-full"
+            title="Colours"
+            selects={selectColours}
+            selectItem={selectItem}
+            removeItem={removeItem}
+            selectAll={selectAll}
+            onSetSelectShow={onSelectShow}
+            show={showSelect === "colours" ? true : false}
+          />
+
+          <SelectMultipleItem
+            data={sizes}
+            name="sizes"
+            className="lg:w-2/4 w-full"
+            title="Sizes"
+            selects={selectSizes}
+            selectItem={selectItem}
+            removeItem={removeItem}
+            selectAll={selectAll}
+            onSetSelectShow={onSelectShow}
+            show={showSelect === "sizes" ? true : false}
           />
         </div>
 
@@ -488,8 +451,20 @@ const CreateProductPage = () => {
         </div>
 
         <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+          <MultipleValue
+            title="Tags"
+            width="lg:w-2/4 w-full"
+            items={tags}
+            name="tags"
+            placeholder="Please enter tag..."
+            error={fieldsCheck.includes("tags")}
+            getAttributes={changeTags}
+          />
+        </div>
+
+        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
           <InputNumber
-            title="Price"
+            title="Giá lẻ"
             width="lg:w-2/4 w-full"
             error={fieldsCheck.includes("price")}
             value={formatBigNumber(product.price)}
@@ -498,20 +473,11 @@ const CreateProductPage = () => {
           />
 
           <InputNumber
-            title="Promotion Price"
+            title="Giá sỉ"
             width="lg:w-2/4 w-full"
-            value={formatBigNumber(product.promotion_price)}
+            value={formatBigNumber(product.wholesalePrice)}
             error={fieldsCheck.includes("promotion_price")}
             name="promotion_price"
-            getValue={changePrice}
-          />
-
-          <InputNumber
-            title="Inventory"
-            width="lg:w-2/4 w-full"
-            value={formatBigNumber(product.inventory)}
-            error={fieldsCheck.includes("inventory")}
-            name="inventory"
             getValue={changePrice}
           />
 
@@ -527,29 +493,48 @@ const CreateProductPage = () => {
           />
 
           <InputText
-            title="Barcode"
+            title="Hãng"
             width="lg:w-2/4 w-full"
-            value={product.barcode || ""}
-            error={fieldsCheck.includes("barcode")}
-            name="barcode"
-            placeholder="Bar code..."
+            value={product.brand || ""}
+            error={fieldsCheck.includes("brand")}
+            name="brand"
+            placeholder="Hãng..."
+            getValue={changeValue}
+          />
+
+          <InputText
+            title="Chất liệu"
+            width="lg:w-2/4 w-full"
+            value={product.material || ""}
+            error={fieldsCheck.includes("material")}
+            name="material"
+            placeholder="Chất liệu..."
             getValue={changeValue}
           />
         </div>
 
         <div className="lg:w-2/4 w-full flex flex-col mt-5 lg:gap-5 gap-3">
-          <Specifications
-            specifications={specifications}
-            onUpdate={onUpdateSpecifications}
-          />
-        </div>
-
-        <div className="w-full flex lg:flex-nowrap flex-wrap items-start justify-between mt-5 lg:gap-5 gap-3">
           <ButtonCheck
-            title="Public"
-            name="public"
+            title="Show"
+            name="isShow"
             width="w-fit"
-            isChecked={product.public}
+            isChecked={product.isShow}
+            onChange={changePublic}
+          />
+
+          <ButtonCheck
+            title="New"
+            name="isNew"
+            width="w-fit"
+            isChecked={product.isNew}
+            onChange={changePublic}
+          />
+
+          <ButtonCheck
+            title="Hot"
+            name="isHot"
+            width="w-fit"
+            isChecked={product.isHot}
             onChange={changePublic}
           />
         </div>

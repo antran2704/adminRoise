@@ -228,17 +228,9 @@ const CouponsPage = (props: Props) => {
       return;
     }
 
-    const { accessToken, publicKey, apiKey } = getCookies();
-    if (!accessToken) return;
-
     try {
-      const headers = {
-        Authorization: `Bear ${accessToken}`,
-        "public-key": `Key ${publicKey}`,
-        "x-api-key": `Key ${apiKey}`,
-      };
 
-      await deleteCoupon(selectItem.id, headers);
+      await deleteCoupon(selectItem.id);
       setShowPopup(false);
 
       if (filter) {

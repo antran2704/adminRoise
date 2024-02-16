@@ -86,9 +86,9 @@ httpConfig.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (!error.response.data) return Promise.reject(error);
+    
     const response = error.response.data;
-
-    if (!response) return Promise.reject(error);
 
     if (response.status === 500) {
       toast.error("Error in server, please try again", {

@@ -18,8 +18,14 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
 
   return (
     <section className="scrollHidden relative w-full h-screen overflow-auto">
-      <div className="px-5 py-5 border-b-2 z-20">
+      <div className="flex items-center justify-between px-5 py-5 border-b-2 z-20">
         <h1 className="lg:text-xl text-lg font-semibold">{title}</h1>
+        <button
+          onClick={onSubmit}
+          className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
+        >
+          Save
+        </button>
       </div>
 
       <ul
@@ -34,13 +40,7 @@ const FormLayout: ForwardRefRenderFunction<HTMLUListElement, props> = (
           onClick={() => router.push(backLink)}
           className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
         >
-          Cancle
-        </button>
-        <button
-          onClick={onSubmit}
-          className="w-fit text-lg text-white font-medium bg-primary px-5 py-1 rounded-md"
-        >
-          Save
+          Back
         </button>
       </div>
     </section>

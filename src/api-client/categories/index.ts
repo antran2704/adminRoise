@@ -10,22 +10,22 @@ import {
 } from "~/ultils/configAxios";
 
 const getCategories = async (page: number = 1) => {
-  return await axiosGet(`/categories?page=${page}`);
+  return await axiosGet(`/admin/categories?page=${page}`);
 };
 
 const getCategory = async (category_id: string) => {
-  return await axiosGet(`/categories/id/${category_id}`);
+  return await axiosGet(`/admin/categories/id/${category_id}`);
 };
 
 const getParentCategories = async () => {
-  return await axiosGet("categories/parent");
+  return await axiosGet("/admin/categories/parent");
 };
 
 const getAllCategories = async (
   select?: IQueryParam<Partial<IDataCategory>>
 ) => {
   const parseQuery = qs.stringify(select);
-  return await axiosGet(`/categories/all?${parseQuery}`);
+  return await axiosGet(`/admin/categories/all?${parseQuery}`);
 };
 
 const getCategoriesWithFilter = async (
@@ -33,30 +33,30 @@ const getCategoriesWithFilter = async (
   page: number = 1
 ) => {
   return await axiosGet(
-    `/categories/search?search=${filter?.search || ""}&page=${page}`
+    `/admin/categories/search?search=${filter?.search || ""}&page=${page}`
   );
 };
 
 const createCategory = async (data: Partial<IDataCategory>) => {
-  return await axiosPost("/categories", data);
+  return await axiosPost("/admin/categories", data);
 };
 
 const updateCategory = async (
   category_id: string,
   data: Partial<IDataCategory>
 ) => {
-  return await axiosPatch(`/categories/${category_id}`, data);
+  return await axiosPatch(`/admin/categories/${category_id}`, data);
 };
 
 const uploadThumbnailCategory = async (formData: FormData) => {
   return await uploadImageOnServer(
-    `${process.env.NEXT_PUBLIC_ENDPOINT_API}/categories/uploadThumbnail`,
+    `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/categories/uploadThumbnail`,
     formData
   );
 };
 
 const deleteCategory = async (category_id: string) => {
-  return await axiosDelete(`/categories/${category_id}`);
+  return await axiosDelete(`/admin/categories/${category_id}`);
 };
 
 export {

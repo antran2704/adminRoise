@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import { notFound } from 'next/navigation'
 import { NextRouter, useRouter } from "next/router";
 import {
   useState,
@@ -15,9 +14,9 @@ import { toast } from "react-toastify";
 import { AiOutlinePrinter } from "react-icons/ai";
 
 import { getDateTime } from "~/helper/datetime";
-import optionsCancle from "./optionCancle";
+import optionsCancle from "~/data/optionCancle";
 
-import { IOptionCancle } from "./interface";
+import { IOptionCancle } from "~/interface";
 import { IOrder, statusOrder, IItemOrder } from "~/interface/order";
 import { typeCel } from "~/enums";
 

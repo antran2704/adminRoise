@@ -310,6 +310,7 @@ const EditCouponPage = (props: Props) => {
     try {
       const payload = await axiosPatch(`/discounts/${id}`, {
         ...data,
+        discount_code: data.discount_code.toUpperCase(),
         discount_thumbnail: thumbnail,
         discount_type: discountType,
       });

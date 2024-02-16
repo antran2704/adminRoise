@@ -45,7 +45,7 @@ const MultipleValue = (props: Props) => {
         return;
       }
 
-      const isExit = items.some((item) => item.title === value);
+      const isExit = items.some((item) => item.name === value);
 
       if (isExit) {
         setMessage("Oh, value is exited!");
@@ -57,8 +57,8 @@ const MultipleValue = (props: Props) => {
       }
 
       const newItem = {
-        _id: uuidv4(),
-        title: value,
+        id: uuidv4(),
+        name: value,
       };
       const newValues = [...items, newItem];
 
@@ -83,7 +83,7 @@ const MultipleValue = (props: Props) => {
   };
 
   const handleDeleteValue = (id: string) => {
-    const values = items.filter((value) => value._id !== id);
+    const values = items.filter((value) => value.id !== id);
     getAttributes(name, values);
   };
 
@@ -111,9 +111,9 @@ const MultipleValue = (props: Props) => {
               key={index}
               className="flex items-center text-sm text-desc px-3 py-1 bg-slate-200 opacity-90 hover:opacity-100 rounded gap-2"
             >
-              <span>{value.title}</span>
+              <span>{value.name}</span>
               <AiOutlineClose
-                onClick={() => handleDeleteValue(value._id as string)}
+                onClick={() => handleDeleteValue(value.id as string)}
                 className="text-sm min-w-[14px] cursor-pointer mt-1"
               />
             </li>

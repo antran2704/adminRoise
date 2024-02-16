@@ -1,4 +1,4 @@
-import { IOptionCancle } from "./interface";
+import { IOptionCancle } from "~/interface";
 
 const optionsCancle: IOptionCancle[] = [
   {

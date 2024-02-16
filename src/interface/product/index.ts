@@ -1,5 +1,3 @@
-import { IParentCategory } from "../category";
-
 interface IValueOption {
   label: string;
   _id?: string;
@@ -13,7 +11,7 @@ interface IOptionProduct {
 
 interface ISpecificationAttributes {
   id: string;
-  [name: string]: string;
+  name: string;
 }
 
 interface ISpecificationsProduct {
@@ -22,20 +20,49 @@ interface ISpecificationsProduct {
   attributes: ISpecificationAttributes[];
 }
 
-interface IProduct {
-  _id: string | null;
-  title: string;
-  meta_title?: string;
-  meta_description?: string;
-  thumbnail: string | null;
-  barcode: string | null;
-  sku: string | null;
-  public: boolean;
-  price: number;
-  promotion_price: number;
-  inventory: number;
-  sold: number;
+interface IImageProduct {
+  imageUrl: string;
+  order: number;
 }
+
+interface IAttributeProduct {
+  id: string;
+  name: string;
+  // order: number;
+}
+
+interface ICategoryProduct {
+  id: string;
+  name: string;
+}
+
+interface IProduct {
+  id: string;
+  name: string;
+  seoName: string;
+  picture: string | null;
+  overview: string;
+  description: string;
+  category: ICategoryProduct | null;
+  material: string | null;
+  slug: string;
+  sku: string | null;
+  brand: string | null;
+  isHot: boolean;
+  images: IImageProduct[];
+  tags: string[];
+  sizes:  IAttributeProduct[];
+  colours:  IAttributeProduct[];
+  isNew: boolean;
+  isShow: boolean;
+  isDeleted: boolean;
+  wholesalePrice: number;
+  specialPrice: number;
+  price: number;
+  createdDate: string;
+}
+
+type ICreateProduct = Omit<IProduct, "id" | "slug" | "createdDate" | "isDeleted">;
 
 interface IVariantProduct extends IProduct {
   product_id: string;
@@ -47,67 +74,13 @@ interface IVariantProduct extends IProduct {
   url: string | null;
 }
 
-interface IProductData extends IProduct {
-  category: IParentCategory;
-  categories: IParentCategory[];
-  type: [];
-  shortDescription: string;
-  description: string;
-  options: IOptionProduct[];
-  gallery: string[];
-  brand?: string | null;
-  hotProduct?: boolean;
-  specifications: ISpecificationsProduct[];
-  viewer: number;
-  rate: number;
-  variants: IVariantProduct[];
-  breadcrumbs: string[];
-  createdAt?: string;
-}
-
-type ICreateProduct = Omit<
-  IProductData,
-  "_id" | "viewer" | "rate" | "slug" | "type" | "createdAt"
->;
-
-type ISendProduct = Omit<
-  IProductData,
-  | "_id"
-  | "viewer"
-  | "rate"
-  | "slug"
-  | "type"
-  | "createdAt"
-  | "category"
-  | "categories"
-  | "variants"
-  | "sold"
-> & {
-  category: string;
-  categories: string[];
-  variations?: string[];
-};
-
-type IProductHome = Pick<
-  IProductData,
-  | "_id"
-  | "title"
-  | "public"
-  | "price"
-  | "promotion_price"
-  | "inventory"
-  | "category"
-  | "thumbnail"
->;
-
 export type {
-  IProductData,
-  IProductHome,
   IVariantProduct,
   IOptionProduct,
   ISpecificationsProduct,
+  ICategoryProduct,
   ICreateProduct,
-  ISendProduct,
   ISpecificationAttributes,
+  IAttributeProduct,
   IValueOption,
 };
