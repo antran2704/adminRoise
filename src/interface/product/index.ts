@@ -75,6 +75,8 @@ interface IVariantProduct extends IProduct {
 }
 
 export type {
+  IProduct,
+  IImageProduct,
   IVariantProduct,
   IOptionProduct,
   ISpecificationsProduct,

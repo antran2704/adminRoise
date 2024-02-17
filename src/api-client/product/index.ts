@@ -1,5 +1,5 @@
 import { uploadImageOnServer } from "~/helper/handleImage";
-import { IFilter, ISendProduct } from "~/interface";
+import { ICreateProduct, IFilter, IProduct } from "~/interface";
 import {
   axiosDelete,
   axiosGet,
@@ -26,13 +26,13 @@ const getProductsWithFilter = async (
   );
 };
 
-const createProduct = async (data: ISendProduct) => {
-  return await axiosPost("/admin/products", data);
+const createProduct = async (data: ICreateProduct) => {
+  return await axiosPost("/product", data);
 };
 
 const updateProduct = async (
   product_id: string,
-  data: Partial<ISendProduct>
+  data: Partial<IProduct>
 ) => {
   return await axiosPatch(`/admin/products/${product_id}`, data);
 };

@@ -5,23 +5,23 @@ import { toast } from "react-toastify";
 import {
   ICreateProduct,
   ISelectItem,
-  ISpecificationsProduct,
   ICategoryProduct,
   IAttributeProduct,
+  IImageProduct,
 } from "~/interface";
-import { deleteImageInSever } from "~/helper/handleImage";
 import FormLayout from "~/layouts/FormLayout";
 import { InputText, InputNumber, InputTextarea } from "~/components/InputField";
-import Thumbnail from "~/components/Image/Thumbnail";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
-import Gallery from "~/components/Image/Gallery";
 import MultipleValue from "~/components/InputField/MultipleValue";
 import { SelectItem } from "~/components/Select";
 import Loading from "~/components/Loading";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import { createProduct, uploadThumbnailProduct } from "~/api-client";
+import { createProduct } from "~/api-client";
 import SelectMultipleItem from "~/components/Select/SelectMutiple/SelectMultipleItem";
+import ImageCus from "~/components/Image/ImageCus";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import { AiOutlinePlus } from "react-icons/ai";
 
 const initData: ICreateProduct = {
   name: "",
@@ -34,7 +34,6 @@ const initData: ICreateProduct = {
   sizes: [],
   images: [],
   tags: [],
-  isDeleted: false,
   isHot: true,
   isNew: true,
   isShow: true,
@@ -47,7 +46,7 @@ const initData: ICreateProduct = {
 };
 
 const initCategories: ICategoryProduct[] = [
-  { id: "1", name: "elctron" },
+  { id: "65b33961ab0b53b436af7c31", name: "QX2" },
   { id: "2", name: "clothe" },
   { id: "3", name: "furniture" },
 ];
@@ -63,6 +62,8 @@ const initColours: IAttributeProduct[] = [
   { id: "2", name: "Green" },
   { id: "3", name: "Blue" },
 ];
+
+const initGalery: string[] = [];
 
 const CreateProductPage = () => {
   const router = useRouter();
@@ -84,19 +85,10 @@ const CreateProductPage = () => {
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
   const [tags, setTags] = useState<ISelectItem[]>([]);
-  const [defaultCategory, setDefaultCategory] = useState<string | null>(null);
 
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-
-  const [gallery, setGallery] = useState<string[]>([]);
-
-  const [specifications, setSpecifications] = useState<
-    ISpecificationsProduct[]
-  >([]);
+  const [gallery, setGallery] = useState<string[]>(initGalery);
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
-  const [loadingGallery, setLoadingGallery] = useState<boolean>(false);
 
   const changeTags = (name: string, values: ISelectItem[]) => {
     setTags(values);
@@ -143,6 +135,11 @@ const CreateProductPage = () => {
 
   const onSelectCategory = useCallback(
     (item: ISelectItem) => {
+      if (fieldsCheck.includes("category")) {
+        const newFieldsCheck = handleRemoveCheck(fieldsCheck, "category");
+        setFieldsCheck(newFieldsCheck);
+      }
+
       setSelectCategory(item as ICategoryProduct);
     },
     [categories, selectCategory]
@@ -183,83 +180,16 @@ const CreateProductPage = () => {
     setProduct({ ...product, [name]: value });
   };
 
-  const uploadThumbnail = useCallback(
-    async (source: File) => {
-      if (source) {
-        if (fieldsCheck.includes("thumbnail")) {
-          const newFieldsCheck = handleRemoveCheck(fieldsCheck, "thumbnail");
-          setFieldsCheck(newFieldsCheck);
-          ("thumbnail");
-        }
+  const changeImage = (index: number, value: string) => {
+    gallery[index] = value;
+    const newGallery = [...gallery];
 
-        const formData: FormData = new FormData();
-        formData.append("image", source);
-        setLoadingThumbnail(true);
+    setGallery(newGallery);
+  };
 
-        try {
-          const { status, payload } = await uploadThumbnailProduct(formData);
-
-          if (status === 201) {
-            setThumbnail(payload);
-            setLoadingThumbnail(false);
-          }
-        } catch (error) {
-          toast.error("Upload thumbnail failed", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          setLoadingThumbnail(false);
-          console.log(error);
-        }
-      }
-    },
-    [thumbnail, loadingThumbnail]
-  );
-
-  const onUploadGallery = useCallback(
-    async (source: File) => {
-      if (source) {
-        const formData: FormData = new FormData();
-        formData.append("image", source);
-        setLoadingGallery(true);
-
-        try {
-          const { status, payload } = await uploadThumbnailProduct(formData);
-
-          if (status === 201) {
-            setGallery([...gallery, payload]);
-            setLoadingGallery(false);
-          }
-        } catch (error) {
-          toast.error("Upload image failed", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          setLoadingGallery(false);
-          console.log(error);
-        }
-      }
-    },
-    [gallery, loadingGallery]
-  );
-
-  const onRemoveGallary = useCallback(
-    async (url: string) => {
-      try {
-        const payload = await deleteImageInSever(url);
-
-        if (payload.status === 201) {
-          const newGallery = gallery.filter((image) => image !== url);
-          setGallery(newGallery);
-        }
-      } catch (error) {
-        toast.error("Remove image failed", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-
-        console.log(error);
-      }
-    },
-    [gallery, loadingGallery]
-  );
+  const addFieldImage = () => {
+    setGallery([...gallery, ""]);
+  };
 
   const checkData = (data: any) => {
     let fields = handleCheckFields(data);
@@ -271,11 +201,35 @@ const CreateProductPage = () => {
     return fields;
   };
 
+  const removeFieldImage = (index: number) => {
+    gallery.splice(index, 1);
+    setGallery([...gallery]);
+  };
+
+  const getImagesSend = (images: string[]) => {
+    const sendImages: IImageProduct[] = [];
+
+    for (let i = 0; i < images.length; i++) {
+      if (images[i]) {
+        sendImages.push({
+          imageUrl: images[i],
+          order: i + 1,
+        });
+      }
+    }
+
+    return sendImages;
+  };
+
   const handleOnSubmit = async () => {
     const fields = checkData([
       {
         name: "name",
         value: product.name,
+      },
+      {
+        name: "seoName",
+        value: product.seoName,
       },
       {
         name: "overview",
@@ -286,8 +240,16 @@ const CreateProductPage = () => {
         value: product.description,
       },
       {
-        name: "thumbnail",
-        value: thumbnail,
+        name: "category",
+        value: selectCategory,
+      },
+      {
+        name: "brand",
+        value: product.brand,
+      },
+      {
+        name: "material",
+        value: product.material,
       },
     ]);
 
@@ -299,9 +261,10 @@ const CreateProductPage = () => {
       return;
     }
 
-    const sendTags: string[] = tags.map((tag: ISelectItem) => tag.name);
-
     setLoading(true);
+
+    const sendTags: string[] = tags.map((tag: ISelectItem) => tag.name);
+    const sendImages: IImageProduct[] = getImagesSend(gallery);
 
     try {
       const sendData: ICreateProduct = {
@@ -313,14 +276,14 @@ const CreateProductPage = () => {
         sku: product.sku,
         material: product.material,
         category: selectCategory,
-        colours: selectColours,
+        colours: [],
+        sizes: [],
         tags: sendTags,
-        sizes: selectSizes,
         isHot: product.isHot,
         isNew: product.isNew,
         isShow: product.isShow,
-        images: [],
-        picture: "",
+        images: sendImages,
+        picture: product.picture,
         price: product.price,
         specialPrice: product.specialPrice,
         wholesalePrice: product.wholesalePrice,
@@ -352,11 +315,11 @@ const CreateProductPage = () => {
       backLink="/products"
       onSubmit={handleOnSubmit}
     >
-      <div>
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+      <div className="flex flex-col items-center">
+        <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <InputText
             title="Tên sản phẩm"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.name}
             error={fieldsCheck.includes("name")}
             name="name"
@@ -366,7 +329,7 @@ const CreateProductPage = () => {
 
           <InputText
             title="Seo Name"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.seoName}
             error={fieldsCheck.includes("seoName")}
             name="seoName"
@@ -376,7 +339,7 @@ const CreateProductPage = () => {
 
           <InputTextarea
             title="Tổng quan"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             error={fieldsCheck.includes("overview")}
             value={product.overview}
             name="overview"
@@ -387,7 +350,7 @@ const CreateProductPage = () => {
 
           <InputTextarea
             title="Mô tả sản phẩm"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             error={fieldsCheck.includes("description")}
             value={product.description}
             name="description"
@@ -396,12 +359,14 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <SelectItem
-            width="lg:w-2/4 w-full"
+            width="w-full"
             title="Thư mục sản phẩm"
             name="category"
+            placeholder="Vui lòng lựa chọn thư mục"
             value={selectCategory ? (selectCategory.id as string) : ""}
+            error={fieldsCheck.includes("category")}
             onSelect={onSelectCategory}
             data={categories}
           />
@@ -409,7 +374,7 @@ const CreateProductPage = () => {
           <SelectMultipleItem
             data={colours}
             name="colours"
-            className="lg:w-2/4 w-full"
+            className="w-full"
             title="Colours"
             selects={selectColours}
             selectItem={selectItem}
@@ -422,7 +387,7 @@ const CreateProductPage = () => {
           <SelectMultipleItem
             data={sizes}
             name="sizes"
-            className="lg:w-2/4 w-full"
+            className="w-full"
             title="Sizes"
             selects={selectSizes}
             selectItem={selectItem}
@@ -433,27 +398,79 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
-          <Thumbnail
-            error={fieldsCheck.includes("thumbnail")}
-            url={thumbnail}
-            loading={loadingThumbnail}
-            onChange={uploadThumbnail}
-          />
+        <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
+          <div className="w-full">
+            <InputText
+              title="Picture"
+              width="w-full"
+              value={product.picture || ""}
+              name="picture"
+              placeholder="Url picture..."
+              getValue={changeValue}
+            />
 
-          <Gallery
-            gallery={gallery}
-            loading={loadingGallery}
-            limited={6}
-            onChange={onUploadGallery}
-            onDelete={onRemoveGallary}
-          />
+            {product.picture && (
+              <ImageCus
+                alt="picture"
+                src={product.picture}
+                className="w-[200px] h-[200px] mt-5"
+                title="picture"
+              />
+            )}
+          </div>
+
+          <div className="w-full">
+            <p className="block text-base text-[#1E1E1E] font-medium mb-1">
+              Images
+            </p>
+
+            <div className="w-full grid grid-cols-3 gap-4">
+              {gallery.map((image: string, index: number) => (
+                <div key={index}>
+                  <div className="flex items-center gap-2">
+                    <button>
+                      <IoIosCloseCircleOutline
+                        onClick={() => removeFieldImage(index)}
+                        className="text-sm min-w-8 w-8 h-8 min-h-8 cursor-pointer text-error"
+                      />
+                    </button>
+                    <InputText
+                      width="w-full"
+                      value={image || ""}
+                      name="picture"
+                      placeholder="Url picture..."
+                      getValue={(name: string, value: string) =>
+                        changeImage(index, value)
+                      }
+                    />
+                  </div>
+                  {image && (
+                    <ImageCus
+                      alt="picture"
+                      src={image}
+                      className="w-[140px] h-[140px] mt-5"
+                      title="picture"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end">
+              <button
+                onClick={addFieldImage}
+                className="flex items-center justify-center rounded-full mt-5 overflow-hidden"
+              >
+                <AiOutlinePlus className="w-10 h-10 bg-success p-2 text-white " />
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <MultipleValue
             title="Tags"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             items={tags}
             name="tags"
             placeholder="Please enter tag..."
@@ -462,28 +479,39 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <InputNumber
-            title="Giá lẻ"
-            width="lg:w-2/4 w-full"
-            error={fieldsCheck.includes("price")}
+            title="Giá"
+            width="w-full"
             value={formatBigNumber(product.price)}
+            error={fieldsCheck.includes("price")}
             name="price"
             getValue={changePrice}
           />
 
           <InputNumber
             title="Giá sỉ"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={formatBigNumber(product.wholesalePrice)}
-            error={fieldsCheck.includes("promotion_price")}
-            name="promotion_price"
+            error={fieldsCheck.includes("wholesalePrice")}
+            name="wholesalePrice"
             getValue={changePrice}
           />
 
+          <InputNumber
+            title="Giá lẻ"
+            width="w-full"
+            error={fieldsCheck.includes("specialPrice")}
+            value={formatBigNumber(product.specialPrice)}
+            name="specialPrice"
+            getValue={changePrice}
+          />
+        </div>
+
+        <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <InputText
             title="SKU"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.sku || ""}
             error={fieldsCheck.includes("sku")}
             placeholder="SKU..."
@@ -494,7 +522,7 @@ const CreateProductPage = () => {
 
           <InputText
             title="Hãng"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.brand || ""}
             error={fieldsCheck.includes("brand")}
             name="brand"
@@ -504,7 +532,7 @@ const CreateProductPage = () => {
 
           <InputText
             title="Chất liệu"
-            width="lg:w-2/4 w-full"
+            width="w-full"
             value={product.material || ""}
             error={fieldsCheck.includes("material")}
             name="material"
@@ -513,7 +541,7 @@ const CreateProductPage = () => {
           />
         </div>
 
-        <div className="lg:w-2/4 w-full flex flex-col mt-5 lg:gap-5 gap-3">
+        <div className="lg:w-2/4 w-full grid grid-cols-1 mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <ButtonCheck
             title="Show"
             name="isShow"

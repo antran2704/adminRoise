@@ -2,7 +2,7 @@ import { Fragment, memo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { AiOutlineCloseCircle, AiOutlinePlus } from "react-icons/ai";
 
-import {InputText} from "../InputField";
+import { InputText } from "../InputField";
 import {
   ISelectItem,
   ISpecificationAttributes,
@@ -51,8 +51,8 @@ const Specifications = (props: Props) => {
   ) => {
     if (specification) {
       setSelectSpecification({
-        _id: specification._id as string,
-        title: specification.title,
+        id: specification.id as string,
+        name: specification.name,
       });
     } else {
       setSelectSpecification(null);
@@ -64,8 +64,8 @@ const Specifications = (props: Props) => {
   const onShowPopupAttribute = (attribute: ISelectAttribute | null = null) => {
     if (attribute) {
       setSelectAttribute({
-        _id: attribute._id as string,
-        title: attribute.title,
+        id: attribute.id as string,
+        name: attribute.name,
         index: attribute.index,
       });
     } else {
@@ -194,8 +194,8 @@ const Specifications = (props: Props) => {
               <button
                 onClick={() =>
                   onShowPopupSpecification({
-                    _id: specification.id,
-                    title: specification.name,
+                    id: specification.id,
+                    name: specification.name,
                   })
                 }
                 className="flex items-center justify-end text-base text-right font-medium text-error gap-2"
@@ -230,7 +230,7 @@ const Specifications = (props: Props) => {
                     <InputText
                       title="Value"
                       width="w-1/2"
-                      value={attribute.value}
+                      value={attribute.name}
                       name="value"
                       getValue={(name, value) =>
                         onChangeAtribute(
@@ -245,8 +245,8 @@ const Specifications = (props: Props) => {
                     <button
                       onClick={() =>
                         onShowPopupAttribute({
-                          _id: attribute.id,
-                          title: attribute.name,
+                          id: attribute.id,
+                          name: attribute.name,
                           index: specificationIndex,
                         })
                       }
@@ -321,7 +321,7 @@ const Specifications = (props: Props) => {
           <div>
             <p className="text-lg">
               Do you want delete specification
-              <strong>{" " + selectSpecification.title}</strong>
+              <strong>{" " + selectSpecification.name}</strong>
             </p>
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
@@ -332,7 +332,7 @@ const Specifications = (props: Props) => {
               </button>
               <button
                 onClick={() =>
-                  onRemoveSpecification(selectSpecification._id as string)
+                  onRemoveSpecification(selectSpecification.id as string)
                 }
                 className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
               >
@@ -352,7 +352,7 @@ const Specifications = (props: Props) => {
           <div>
             <p className="text-lg">
               Do you want delete attribute
-              <strong>{" " + selectAttribute.title}</strong>
+              <strong>{" " + selectAttribute.name}</strong>
             </p>
             <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
               <button
@@ -363,7 +363,10 @@ const Specifications = (props: Props) => {
               </button>
               <button
                 onClick={() =>
-                  onRemoveAttribute(selectAttribute._id as string, selectAttribute.index)
+                  onRemoveAttribute(
+                    selectAttribute.id as string,
+                    selectAttribute.index
+                  )
                 }
                 className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 rounded-md"
               >
