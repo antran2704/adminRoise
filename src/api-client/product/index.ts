@@ -8,8 +8,8 @@ import {
   axiosPut,
 } from "~/ultils/configAxios";
 
-const getProducts = async (page: number = 1) => {
-  return await axiosGet(`/admin/products?page=${page}`);
+const getProducts = async () => {
+  return await axiosGet(`/product`);
 };
 
 const getProduct = async (product_id: string) => {

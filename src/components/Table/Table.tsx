@@ -28,11 +28,10 @@ const Table: FC<Props> = (props: Props) => {
 
   const onSelectCheckBoxAll = () => {
     if(!setSelects) return;
-
     if (selects.length === items.length) {
       setSelects([]);
     } else {
-      const newItems = items.map((item: any) => item._id);
+      const newItems = items.map((item: any) => item.id);
       setSelects(newItems as string[]);
     }
   };

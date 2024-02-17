@@ -42,14 +42,12 @@ const colHeaderAttributeValue: string[] = ["Name", "Published", ""];
 
 // header table for product
 const colHeaderProduct: string[] = [
-  "Product Name",
-  "Category",
-  "Price",
-  "Sale Price",
-  "Inventory",
-  "Status",
+  "Tên sản phẩm",
+  "Thư mục",
+  "Giá sỉ",
+  "Giá lẻ",
   "Published",
-  "Action",
+  "Chỉnh sửa",
 ];
 
 const colHeaderVariants: string[] = [
