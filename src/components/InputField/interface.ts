@@ -5,6 +5,7 @@ interface IInput {
   name: string;
   placeholder?: string;
   value?: string;
+  defaultValue?: string;
   error?: boolean;
   readonly?: boolean;
   enableEnter?: boolean;
@@ -15,6 +16,7 @@ interface IInput {
 }
 
 interface IInputText extends IInput {
+  debouce?: number
   getValue?: (name: string, value: string, id?: string) => void;
 }
 

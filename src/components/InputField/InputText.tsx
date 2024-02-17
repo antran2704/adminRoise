@@ -3,6 +3,8 @@ import { TippyInfor } from "../Tippy";
 import { IInputText } from "./interface";
 import { SIZE } from ".";
 
+let timmer: any;
+
 const InputField: FC<IInputText> = (props: IInputText) => {
   const {
     id,
@@ -10,32 +12,37 @@ const InputField: FC<IInputText> = (props: IInputText) => {
     width,
     name,
     placeholder,
-    value,
+    defaultValue = "",
     size = "S",
     infor = null,
     readonly = false,
     required = false,
     enableEnter = false,
     error,
+    debouce = 0,
     onEnter,
     getValue,
   } = props;
 
-  const handleChangeValue = (
-    e: FormEvent<HTMLInputElement>
-  ) => {
+  const handleChangeValue = (e: FormEvent<HTMLInputElement>) => {
     if (readonly) return;
+
+    if (timmer) {
+      clearTimeout(timmer);
+    }
 
     const name = e.currentTarget.name;
     const value = e.currentTarget.value;
 
-    if (getValue && id) {
-      getValue(name, value, id);
-    }
+    timmer = setTimeout(() => {
+      if (getValue && id) {
+        getValue(name, value, id);
+      }
 
-    if (getValue) {
-      getValue(name, value);
-    }
+      if (getValue) {
+        getValue(name, value);
+      }
+    }, debouce);
   };
 
   const onKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -65,7 +72,7 @@ const InputField: FC<IInputText> = (props: IInputText) => {
       <input
         required={required}
         name={name}
-        value={value}
+        defaultValue={defaultValue}
         placeholder={placeholder}
         readOnly={readonly}
         onKeyUp={(e) => {

@@ -1,3 +1,5 @@
+import { ICategory } from "../category";
+
 interface IValueOption {
   label: string;
   _id?: string;
@@ -28,22 +30,17 @@ interface IImageProduct {
 interface IAttributeProduct {
   id: string;
   name: string;
-  // order: number;
-}
-
-interface ICategoryProduct {
-  id: string;
-  name: string;
+  order?: number;
 }
 
 interface IProduct {
-  id: string;
+  id: string | null;
   name: string;
   seoName: string;
   picture: string | null;
   overview: string;
   description: string;
-  category: ICategoryProduct | null;
+  category: ICategory | null;
   material: string | null;
   slug: string;
   sku: string | null;
@@ -55,11 +52,11 @@ interface IProduct {
   colours:  IAttributeProduct[];
   isNew: boolean;
   isShow: boolean;
-  isDeleted: boolean;
+  isDeleted?: boolean;
   wholesalePrice: number;
   specialPrice: number;
   price: number;
-  createdDate: string;
+  createdDate?: string;
 }
 
 type ICreateProduct = Omit<IProduct, "id" | "slug" | "createdDate" | "isDeleted">;
@@ -80,7 +77,6 @@ export type {
   IVariantProduct,
   IOptionProduct,
   ISpecificationsProduct,
-  ICategoryProduct,
   ICreateProduct,
   ISpecificationAttributes,
   IAttributeProduct,

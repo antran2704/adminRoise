@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import {
   ICreateProduct,
   ISelectItem,
-  ICategoryProduct,
+  ICategory,
   IAttributeProduct,
   IImageProduct,
 } from "~/interface";
@@ -17,11 +17,17 @@ import MultipleValue from "~/components/InputField/MultipleValue";
 import { SelectItem } from "~/components/Select";
 import Loading from "~/components/Loading";
 import { formatBigNumber } from "~/helper/number/fomatterCurrency";
-import { createProduct } from "~/api-client";
+import {
+  createProduct,
+  getCategories,
+  getColours,
+  getSizes,
+} from "~/api-client";
 import SelectMultipleItem from "~/components/Select/SelectMutiple/SelectMultipleItem";
 import ImageCus from "~/components/Image/ImageCus";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { AiOutlinePlus } from "react-icons/ai";
+import useDebounce from "~/hooks/useDebounce";
 
 const initData: ICreateProduct = {
   name: "",
@@ -45,7 +51,7 @@ const initData: ICreateProduct = {
   wholesalePrice: 0,
 };
 
-const initCategories: ICategoryProduct[] = [
+const initCategories: ICategory[] = [
   { id: "65b33961ab0b53b436af7c31", name: "QX2" },
   { id: "2", name: "clothe" },
   { id: "3", name: "furniture" },
@@ -69,24 +75,22 @@ const CreateProductPage = () => {
   const router = useRouter();
 
   const [product, setProduct] = useState<ICreateProduct>(initData);
-  const [categories, setCategories] =
-    useState<ICategoryProduct[]>(initCategories);
+  const [categories, setCategories] = useState<ICategory[]>([]);
   const [selectCategory, setSelectCategory] = useState<ISelectItem | null>(
     null
   );
 
-  const [sizes, setSizes] = useState<IAttributeProduct[]>(initSizes);
+  const [sizes, setSizes] = useState<IAttributeProduct[]>([]);
   const [selectSizes, setSelectSizes] = useState<IAttributeProduct[]>([]);
-  const [colours, setColours] = useState<IAttributeProduct[]>(initColours);
+  const [colours, setColours] = useState<IAttributeProduct[]>([]);
   const [selectColours, setSelectColours] = useState<IAttributeProduct[]>([]);
 
   const [showSelect, setShowSelect] = useState<string | null>(null);
-
   const [fieldsCheck, setFieldsCheck] = useState<string[]>([]);
 
   const [tags, setTags] = useState<ISelectItem[]>([]);
 
-  const [gallery, setGallery] = useState<string[]>(initGalery);
+  const [gallery, setGallery] = useState<string[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -94,44 +98,56 @@ const CreateProductPage = () => {
     setTags(values);
   };
 
-  const onSelectShow = (name: string) => {
-    if (showSelect === name) {
-      setShowSelect(null);
-      return;
-    }
+  const onSelectShow = useCallback(
+    (name: string) => {
+      if (showSelect === name) {
+        setShowSelect(null);
+        return;
+      }
 
-    setShowSelect(name);
-  };
+      setShowSelect(name);
+    },
+    [showSelect]
+  );
 
-  const selectAll = (items: ISelectItem[], key: string) => {
-    switch (key) {
-      case "colours":
-        setSelectColours(items as IAttributeProduct[]);
-        break;
-      default:
-        setSelectSizes(items as IAttributeProduct[]);
-    }
-  };
+  const selectAll = useCallback(
+    (items: ISelectItem[], key: string) => {
+      switch (key) {
+        case "colours":
+          setSelectColours(items as IAttributeProduct[]);
+          break;
+        default:
+          setSelectSizes(items as IAttributeProduct[]);
+      }
+    },
+    [selectColours, selectSizes]
+  );
 
-  const selectItem = (items: ISelectItem, name: string) => {
-    switch (name) {
-      case "colours":
-        setSelectColours([...selectColours, items as IAttributeProduct]);
-        break;
-      default:
-        setSelectSizes([...selectSizes, items as IAttributeProduct]);
-    }
-  };
+  const selectItem = useCallback(
+    (items: ISelectItem, name: string) => {
+      switch (name) {
+        case "colours":
+          setSelectColours([...selectColours, items as IAttributeProduct]);
+          break;
+        default:
+          setSelectSizes([...selectSizes, items as IAttributeProduct]);
+      }
+    },
+    [selectColours, selectSizes]
+  );
 
-  const removeItem = (items: ISelectItem[], id: string, key: string) => {
-    switch (key) {
-      case "colours":
-        setSelectColours(items as IAttributeProduct[]);
-        break;
-      default:
-        setSelectSizes(items as IAttributeProduct[]);
-    }
-  };
+  const removeItem = useCallback(
+    (items: ISelectItem[], id: string, key: string) => {
+      switch (key) {
+        case "colours":
+          setSelectColours(items as IAttributeProduct[]);
+          break;
+        default:
+          setSelectSizes(items as IAttributeProduct[]);
+      }
+    },
+    [selectColours, selectSizes]
+  );
 
   const onSelectCategory = useCallback(
     (item: ISelectItem) => {
@@ -140,7 +156,7 @@ const CreateProductPage = () => {
         setFieldsCheck(newFieldsCheck);
       }
 
-      setSelectCategory(item as ICategoryProduct);
+      setSelectCategory(item as ICategory);
     },
     [categories, selectCategory]
   );
@@ -276,8 +292,8 @@ const CreateProductPage = () => {
         sku: product.sku,
         material: product.material,
         category: selectCategory,
-        colours: [],
-        sizes: [],
+        colours: selectColours,
+        sizes: selectSizes,
         tags: sendTags,
         isHot: product.isHot,
         isNew: product.isNew,
@@ -289,14 +305,7 @@ const CreateProductPage = () => {
         wholesalePrice: product.wholesalePrice,
       };
 
-      const payload = await createProduct(sendData);
-
-      if (payload.status === 201) {
-        toast.success("Success create product", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        router.push("/products");
-      }
+      await createProduct(sendData);
 
       setLoading(false);
     } catch (error) {
@@ -307,7 +316,38 @@ const CreateProductPage = () => {
     }
   };
 
-  const handleGetCategories = async () => {};
+  const handleGetSizes = async () => {
+    try {
+      const res = await getSizes();
+      setSizes(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGetColours = async () => {
+    try {
+      const res = await getColours();
+      setColours(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGetCategories = async () => {
+    try {
+      const res = await getCategories();
+      setCategories(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetCategories();
+    handleGetColours();
+    handleGetSizes();
+  }, []);
 
   return (
     <FormLayout
@@ -320,7 +360,6 @@ const CreateProductPage = () => {
           <InputText
             title="Tên sản phẩm"
             width="w-full"
-            value={product.name}
             error={fieldsCheck.includes("name")}
             name="name"
             placeholder="Tên sản phẩm..."
@@ -330,7 +369,6 @@ const CreateProductPage = () => {
           <InputText
             title="Seo Name"
             width="w-full"
-            value={product.seoName}
             error={fieldsCheck.includes("seoName")}
             name="seoName"
             placeholder="Seo Name..."
@@ -341,7 +379,6 @@ const CreateProductPage = () => {
             title="Tổng quan"
             width="w-full"
             error={fieldsCheck.includes("overview")}
-            value={product.overview}
             name="overview"
             placeholder="Tổng quan sản phẩm..."
             rows={2}
@@ -403,7 +440,7 @@ const CreateProductPage = () => {
             <InputText
               title="Picture"
               width="w-full"
-              value={product.picture || ""}
+              debouce={600}
               name="picture"
               placeholder="Url picture..."
               getValue={changeValue}
@@ -436,7 +473,6 @@ const CreateProductPage = () => {
                     </button>
                     <InputText
                       width="w-full"
-                      value={image || ""}
                       name="picture"
                       placeholder="Url picture..."
                       getValue={(name: string, value: string) =>
@@ -512,7 +548,6 @@ const CreateProductPage = () => {
           <InputText
             title="SKU"
             width="w-full"
-            value={product.sku || ""}
             error={fieldsCheck.includes("sku")}
             placeholder="SKU..."
             name="sku"
@@ -523,7 +558,6 @@ const CreateProductPage = () => {
           <InputText
             title="Hãng"
             width="w-full"
-            value={product.brand || ""}
             error={fieldsCheck.includes("brand")}
             name="brand"
             placeholder="Hãng..."
@@ -533,7 +567,6 @@ const CreateProductPage = () => {
           <InputText
             title="Chất liệu"
             width="w-full"
-            value={product.material || ""}
             error={fieldsCheck.includes("material")}
             name="material"
             placeholder="Chất liệu..."

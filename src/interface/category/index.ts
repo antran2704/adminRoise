@@ -47,8 +47,15 @@ interface ICategorySelect {
   node_id: string | null;
 }
 
+interface ICategory {
+  id: string;
+  name: string;
+  order?: number;
+}
+
 export type {
   IThumbnailUrl,
+  ICategory,
   IOption,
   IDataCategory,
   IParentCategory,

@@ -5,6 +5,7 @@ import {
   axiosGet,
   axiosPatch,
   axiosPost,
+  axiosPut,
 } from "~/ultils/configAxios";
 
 const getProducts = async (page: number = 1) => {
@@ -12,7 +13,7 @@ const getProducts = async (page: number = 1) => {
 };
 
 const getProduct = async (product_id: string) => {
-  return await axiosGet(`/admin/products/id/${product_id}`);
+  return await axiosGet(`/product/${product_id}`);
 };
 
 const getProductsWithFilter = async (
@@ -34,7 +35,7 @@ const updateProduct = async (
   product_id: string,
   data: Partial<IProduct>
 ) => {
-  return await axiosPatch(`/admin/products/${product_id}`, data);
+  return await axiosPut(`/product/${product_id}`, data);
 };
 
 const uploadThumbnailProduct = async (formData: FormData) => {

@@ -9,8 +9,8 @@ import {
   axiosPost,
 } from "~/ultils/configAxios";
 
-const getCategories = async (page: number = 1) => {
-  return await axiosGet(`/admin/categories?page=${page}`);
+const getCategories = async () => {
+  return await axiosGet("category");
 };
 
 const getCategory = async (category_id: string) => {

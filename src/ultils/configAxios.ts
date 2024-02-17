@@ -35,6 +35,15 @@ const axiosPatch = async <T>(
   return payload.data;
 };
 
+const axiosPut = async <T>(
+  path: string,
+  data: T,
+  config?: AxiosRequestConfig | undefined
+) => {
+  const payload = await httpConfig.put(path, data, { ...config });
+  return payload.data;
+};
+
 const axiosDelete = async (
   path: string,
   config?: AxiosRequestConfig | undefined
@@ -140,4 +149,4 @@ httpConfig.interceptors.response.use(
   }
 );
 
-export { axiosGet, axiosPatch, axiosPost, axiosDelete };
+export { axiosGet, axiosPatch, axiosPut, axiosPost, axiosDelete };

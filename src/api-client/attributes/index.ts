@@ -6,6 +6,14 @@ import {
   axiosPost,
 } from "~/ultils/configAxios";
 
+const getSizes = async () => {
+  return await axiosGet("/size");
+};
+
+const getColours = async () => {
+  return await axiosGet("/colour");
+};
+
 const getAttributes = async (page: number = 1) => {
   return await axiosGet(`/attributes?page=${page}`);
 };
@@ -70,6 +78,8 @@ const deleteChildAttribute = async (
 };
 
 export {
+  getColours,
+  getSizes,
   getAttributes,
   getChildAttributes,
   getAttributesAvailable,
