@@ -10,7 +10,7 @@ import {
   IImageProduct,
 } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
-import { InputText, InputNumber, InputTextarea } from "~/components/InputField";
+import { InputText, InputNumber, InputTextarea, InputTextDebouce } from "~/components/InputField";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/InputField/MultipleValue";
@@ -361,6 +361,7 @@ const CreateProductPage = () => {
             title="Tên sản phẩm"
             width="w-full"
             error={fieldsCheck.includes("name")}
+            value={product.name}
             name="name"
             placeholder="Tên sản phẩm..."
             getValue={changeValue}
@@ -368,6 +369,7 @@ const CreateProductPage = () => {
 
           <InputText
             title="Seo Name"
+            value={product.seoName}
             width="w-full"
             error={fieldsCheck.includes("seoName")}
             name="seoName"
@@ -377,6 +379,7 @@ const CreateProductPage = () => {
 
           <InputTextarea
             title="Tổng quan"
+            value={product.overview}
             width="w-full"
             error={fieldsCheck.includes("overview")}
             name="overview"
@@ -387,9 +390,9 @@ const CreateProductPage = () => {
 
           <InputTextarea
             title="Mô tả sản phẩm"
+            value={product.description}
             width="w-full"
             error={fieldsCheck.includes("description")}
-            value={product.description}
             name="description"
             placeholder="Mô tả sản phẩm..."
             getValue={changeValue}
@@ -437,12 +440,12 @@ const CreateProductPage = () => {
 
         <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <div className="w-full">
-            <InputText
+            <InputTextDebouce
               title="Picture"
               width="w-full"
-              debouce={600}
               name="picture"
               placeholder="Url picture..."
+              debouce={600}
               getValue={changeValue}
             />
 
@@ -471,9 +474,10 @@ const CreateProductPage = () => {
                         className="text-sm min-w-8 w-8 h-8 min-h-8 cursor-pointer text-error"
                       />
                     </button>
-                    <InputText
+                    <InputTextDebouce
                       width="w-full"
                       name="picture"
+                      debouce={600}
                       placeholder="Url picture..."
                       getValue={(name: string, value: string) =>
                         changeImage(index, value)
@@ -548,6 +552,7 @@ const CreateProductPage = () => {
           <InputText
             title="SKU"
             width="w-full"
+            value={product.sku || ""}
             error={fieldsCheck.includes("sku")}
             placeholder="SKU..."
             name="sku"
@@ -558,6 +563,7 @@ const CreateProductPage = () => {
           <InputText
             title="Hãng"
             width="w-full"
+            value={product.brand || ""}
             error={fieldsCheck.includes("brand")}
             name="brand"
             placeholder="Hãng..."
@@ -566,6 +572,7 @@ const CreateProductPage = () => {
 
           <InputText
             title="Chất liệu"
+            value={product.material || ""}
             width="w-full"
             error={fieldsCheck.includes("material")}
             name="material"

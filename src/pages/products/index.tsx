@@ -22,7 +22,7 @@ import {
   deleteProduct,
   getCategories,
   getProducts,
-  getProductsWithFilter,
+  searchProduct,
   updateProduct,
 } from "~/api-client";
 
@@ -44,7 +44,9 @@ const PAGE_SIZE = 2;
 
 const ProductPage = (props: Props) => {
   const { query } = props;
-  const currentPage = query.page ? Number(query.page) : 1;
+  const { page, searchText } = query;
+  const currentPage = page ? Number(page) : 1;
+
   const [categories, setCategories] = useState<ISelectItem[]>([]);
   const [selectCategory, setSelectCategory] = useState<ISelectItem | null>(
     null
@@ -59,7 +61,9 @@ const ProductPage = (props: Props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
-  const [filter, setFilter] = useState<IFilter | null>(null);
+  const [filter, setFilter] = useState<IFilter | null>(
+    searchText ? { searchText: searchText as string } : null
+  );
 
   const onSelectCategory = useCallback(
     (item: ISelectItem) => {
@@ -95,40 +99,20 @@ const ProductPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await getProductsWithFilter(filter, currentPage);
+      const response = await searchProduct(filter as IFilter);
 
-      if (response.status === 200) {
-        if (response.payload.length === 0) {
-          setProducts([]);
-          setMessage("Sorry, we can not find this Product😞");
-          setLoading(false);
-          return;
-        }
-
-        const data: IProduct[] = response.payload.map((item: IProduct) => {
-          return {
-            _id: item._id,
-            title: item.title,
-            price: item.price,
-            promotion_price: item.promotion_price,
-            inventory: item.inventory,
-            category: item.category,
-            thumbnail: item.thumbnail,
-            public: item.public,
-          };
-        });
-        setPagination(response.pagination);
-        setProducts(data);
-        setLoading(false);
+      if (response) {
+        setProducts(response);
       }
     } catch (error) {
       console.log(error);
       setMessage("Error in server");
-      setLoading(false);
       toast.error("Error in server, please try again", {
         position: toast.POSITION.TOP_RIGHT,
       });
     }
+
+    setLoading(false);
   }, [filter]);
 
   const onChangePublic = async (id: string, status: boolean) => {
@@ -166,38 +150,7 @@ const ProductPage = (props: Props) => {
       const response = await getProducts();
       if (response) {
         setProducts(response);
-        setPagination({
-          currentPage: 1,
-          pageSize: PAGE_SIZE,
-          totalItems: response.length,
-        });
       }
-
-      // if (response.status === 200) {
-      //   if (response.payload.length === 0) {
-      //     setProducts([]);
-      //     setMessage("Sorry, we can not find this Product😞");
-      //     setLoading(false);
-      //     return;
-      //   }
-
-      //   const data: IProduct[] = response.payload.map(
-      //     (item: IProduct) => {
-      //       return {
-      //         _id: item._id,
-      //         title: item.title,
-      //         price: item.price,
-      //         promotion_price: item.promotion_price,
-      //         inventory: item.inventory,
-      //         category: item.category,
-      //         thumbnail: item.thumbnail,
-      //         public: item.public,
-      //       };
-      //     }
-      //   );
-      //   setPagination(response.pagination);
-      //   setProducts(data);
-      // }
     } catch (error) {
       console.log(error);
       setMessage("Error in server");
@@ -264,28 +217,30 @@ const ProductPage = (props: Props) => {
     handleGetCategories();
   }, []);
 
-  // useEffect(() => {
-  //   if (filter) {
-  //     handleGetDataByFilter();
-  //   } else {
-  //     handleGetData();
-  //   }
-  // }, [currentPage]);
-
   useEffect(() => {
-    handleGetData();
+    if (searchText) {
+      handleGetDataByFilter();
+    } else {
+      handleGetData();
+    }
   }, []);
 
   useEffect(() => {
-    if (products.length > 0) {
-      setPagination({
-        currentPage,
-        pageSize: PAGE_SIZE,
-        totalItems: products.length,
-      });
-      setShowProducts(
-        products.slice((currentPage - 1) * PAGE_SIZE, PAGE_SIZE * currentPage)
-      );
+    if (message) {
+      setMessage(null);
+    }
+
+    setPagination({
+      currentPage,
+      pageSize: PAGE_SIZE,
+      totalItems: products.length,
+    });
+    setShowProducts(
+      products.slice((currentPage - 1) * PAGE_SIZE, PAGE_SIZE * currentPage)
+    );
+
+    if (currentPage > Math.ceil(products.length / PAGE_SIZE)) {
+      setMessage("No Product");
     }
   }, [currentPage, products]);
 
@@ -308,7 +263,7 @@ const ProductPage = (props: Props) => {
     >
       <Fragment>
         <Search
-          search={filter?.search ? filter.search : ""}
+          search={filter?.searchText ? filter.searchText : ""}
           onReset={onReset}
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}

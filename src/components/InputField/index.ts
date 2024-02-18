@@ -5,8 +5,9 @@ const SIZE = {
 };
 
 import InputText from "./InputText";
+import InputTextDebouce from "./InputTextDebouce";
 import InputNumber from "./InputNumber";
 import InputPassword from "./InputPassword";
 import InputTextarea from "./InputTextarea";
 
-export { InputNumber, InputPassword, InputText, InputTextarea, SIZE };
+export { InputNumber, InputPassword, InputText, InputTextarea, InputTextDebouce, SIZE };

@@ -16,6 +16,10 @@ const getProduct = async (product_id: string) => {
   return await axiosGet(`/product/${product_id}`);
 };
 
+const searchProduct = async (filter: IFilter) => {
+  return axiosPost("/product/search", filter)
+}
+
 const getProductsWithFilter = async (
   filter: IFilter | null,
   page: number = 1
@@ -53,6 +57,7 @@ export {
   getProducts,
   getProduct,
   getProductsWithFilter,
+  searchProduct,
   createProduct,
   updateProduct,
   uploadThumbnailProduct,

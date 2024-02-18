@@ -5,7 +5,6 @@ interface IInput {
   name: string;
   placeholder?: string;
   value?: string;
-  defaultValue?: string;
   error?: boolean;
   readonly?: boolean;
   enableEnter?: boolean;
@@ -16,7 +15,12 @@ interface IInput {
 }
 
 interface IInputText extends IInput {
+  getValue?: (name: string, value: string, id?: string) => void;
+}
+
+interface IInputTextDebouce extends IInput {
   debouce?: number
+  defaultValue?: string;
   getValue?: (name: string, value: string, id?: string) => void;
 }
 
@@ -30,4 +34,4 @@ interface ITextarea extends IInput {
   getValue?: (name: string, value: string, id?: string) => void;
 }
 
-export type { IInputText, IInputNumber, ITextarea };
+export type { IInputText, IInputNumber, ITextarea, IInputTextDebouce };

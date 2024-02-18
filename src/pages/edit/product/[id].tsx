@@ -17,7 +17,7 @@ import {
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 import FormLayout from "~/layouts/FormLayout";
-import { InputNumber, InputText, InputTextarea } from "~/components/InputField";
+import { InputNumber, InputText, InputTextDebouce, InputTextarea } from "~/components/InputField";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import MultipleValue from "~/components/InputField/MultipleValue";
 import { SelectItem } from "~/components/Select";
@@ -86,7 +86,6 @@ const ProductEditPage = (props: Props) => {
   const [tags, setTags] = useState<ISelectItem[]>([]);
 
   const [gallery, setGallery] = useState<string[]>([]);
-  console.log("gallery:::",gallery);
   const [loading, setLoading] = useState<boolean>(false);
 
   const changeTags = (name: string, values: ISelectItem[]) => {
@@ -385,8 +384,8 @@ const ProductEditPage = (props: Props) => {
           <InputText
             title="Tên sản phẩm"
             width="w-full"
-            defaultValue={product.name}
             error={fieldsCheck.includes("name")}
+            value={product.name}
             name="name"
             placeholder="Tên sản phẩm..."
             getValue={changeValue}
@@ -394,8 +393,8 @@ const ProductEditPage = (props: Props) => {
 
           <InputText
             title="Seo Name"
+            value={product.seoName}
             width="w-full"
-            defaultValue={product.seoName}
             error={fieldsCheck.includes("seoName")}
             name="seoName"
             placeholder="Seo Name..."
@@ -404,9 +403,9 @@ const ProductEditPage = (props: Props) => {
 
           <InputTextarea
             title="Tổng quan"
+            value={product.overview}
             width="w-full"
             error={fieldsCheck.includes("overview")}
-            value={product.overview}
             name="overview"
             placeholder="Tổng quan sản phẩm..."
             rows={2}
@@ -415,9 +414,9 @@ const ProductEditPage = (props: Props) => {
 
           <InputTextarea
             title="Mô tả sản phẩm"
+            value={product.description}
             width="w-full"
             error={fieldsCheck.includes("description")}
-            value={product.description}
             name="description"
             placeholder="Mô tả sản phẩm..."
             getValue={changeValue}
@@ -465,7 +464,7 @@ const ProductEditPage = (props: Props) => {
 
         <div className="lg:w-2/4 w-full flex flex-col mt-5 p-5 rounded-md border-2 lg:gap-5 gap-3">
           <div className="w-full">
-            <InputText
+            <InputTextDebouce
               title="Picture"
               width="w-full"
               debouce={600}
@@ -500,7 +499,7 @@ const ProductEditPage = (props: Props) => {
                         className="text-sm min-w-8 w-8 h-8 min-h-8 cursor-pointer text-error"
                       />
                     </button>
-                    <InputText
+                    <InputTextDebouce
                       width="w-full"
                       name="picture"
                       debouce={600}
@@ -580,7 +579,7 @@ const ProductEditPage = (props: Props) => {
             title="SKU"
             width="w-full"
             error={fieldsCheck.includes("sku")}
-            defaultValue={product.sku || ""}
+            value={product.sku || ""}
             placeholder="SKU..."
             name="sku"
             getValue={changeValue}
@@ -591,7 +590,7 @@ const ProductEditPage = (props: Props) => {
             title="Hãng"
             width="w-full"
             error={fieldsCheck.includes("brand")}
-            defaultValue={product.brand || ""}
+            value={product.brand || ""}
             name="brand"
             placeholder="Hãng..."
             getValue={changeValue}
@@ -601,7 +600,7 @@ const ProductEditPage = (props: Props) => {
             title="Chất liệu"
             width="w-full"
             error={fieldsCheck.includes("material")}
-            defaultValue={product.material || ""}
+            value={product.material || ""}
             name="material"
             placeholder="Chất liệu..."
             getValue={changeValue}

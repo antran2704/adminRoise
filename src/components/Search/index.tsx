@@ -16,15 +16,12 @@ const Search: FC<Props> = (props: Props) => {
   const router = useRouter();
 
   const handleFilter = () => {
-    if (router.query.page && Number(router.query.page) !== 1) {
-      router.replace({
-        query: {},
-      });
-    }
-
-    if (!router.query.page || Number(router.query.page) === 1) {
-      onFilter();
-    }
+    if (!search) return;
+    
+    router.replace({
+      query: { searchText: search },
+    });
+    onFilter();
   };
 
   const handleReset = () => {
@@ -38,7 +35,7 @@ const Search: FC<Props> = (props: Props) => {
     <div className={`flex flex-wrap items-end min-h-10 mt-5 mb-10 gap-5`}>
       <InputText
         width="lg:w-4/12 md:w-6/12 w-full"
-        name="search"
+        name="searchText"
         size="M"
         value={search}
         getValue={onSearch}
