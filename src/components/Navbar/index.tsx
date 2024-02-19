@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { FC, useState, useEffect } from "react";
-import { RiListSettingsFill } from "react-icons/ri";
+import { IoMdSettings } from "react-icons/io";
 import { BsArrowLeft } from "react-icons/bs";
 import { BiLogOut } from "react-icons/bi";
 import { listBody, listSetting, itemNav } from "./data";
@@ -47,10 +47,10 @@ const Navbar: FC = () => {
   return (
     <>
       <button
-        className="fixed flex items-center justify-center w-10 h-10 right-2 bottom-2 bg-black rounded-md opacity-60 hover:opacity-100 z-10"
+        className="fixed flex items-center justify-center w-10 h-10 -right-2 bottom-20 bg-black rounded-md opacity-60 hover:opacity-100 z-10"
         onClick={handeShow}
       >
-        <RiListSettingsFill className="text-xl text-white" />
+        <IoMdSettings  className="text-xl text-white" />
       </button>
       {/* Navbar on PC */}
       <nav
@@ -70,6 +70,7 @@ const Navbar: FC = () => {
               src={infor.avartar as string}
               className="min-w-[60px] w-[60px] min-h-[60px] h-[60px] object-cover border rounded-full"
               title="avartar"
+              alt="avartar"
             />
             <h2 className="text-black text-xl font-medium">{infor.name}</h2>
           </div>

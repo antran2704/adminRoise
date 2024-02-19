@@ -116,25 +116,25 @@ const ProductPage = (props: Props) => {
   }, [filter]);
 
   const onChangePublic = async (id: string, status: boolean) => {
-    if (!id) {
-      toast.error("False change public", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
+    // if (!id) {
+    //   toast.error("False change public", {
+    //     position: toast.POSITION.TOP_RIGHT,
+    //   });
+    // }
 
-    try {
-      const payload = await updateProduct(id, { public: status });
+    // try {
+    //   const payload = await updateProduct(id, { public: status });
 
-      if (payload.status === 201) {
-        toast.success("Success updated product", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-      }
-    } catch (error) {
-      toast.error("Please try again", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-    }
+    //   if (payload.status === 201) {
+    //     toast.success("Success updated product", {
+    //       position: toast.POSITION.TOP_RIGHT,
+    //     });
+    //   }
+    // } catch (error) {
+    //   toast.error("Please try again", {
+    //     position: toast.POSITION.TOP_RIGHT,
+    //   });
+    // }
   };
 
   const onReset = useCallback(() => {
@@ -195,16 +195,14 @@ const ProductPage = (props: Props) => {
       const response = await deleteProduct(selectProduct.id);
       setShowPopup(false);
 
-      if (response.status === 201) {
-        if (filter) {
-          handleGetDataByFilter();
-        } else {
-          handleGetData();
-        }
-        toast.success("Success delete product", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+      if (filter) {
+        handleGetDataByFilter();
+      } else {
+        handleGetData();
       }
+      toast.success("Success delete product", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
     } catch (error) {
       toast.error("Error delete product", {
         position: toast.POSITION.TOP_RIGHT,
@@ -284,7 +282,7 @@ const ProductPage = (props: Props) => {
           items={products}
           selects={selectProducts}
           setSelects={setSelectProducts}
-          selectAll={true}
+          selectAll={false}
           isSelected={selectProducts.length === products.length ? true : false}
           colHeadTabel={colHeadTable}
           message={message}
@@ -296,7 +294,7 @@ const ProductPage = (props: Props) => {
                 key={product.id}
                 className="hover:bg-slate-100 border-b border-gray-300"
               >
-                <CelTable
+                {/* <CelTable
                   type={typeCel.SELECT}
                   isSelected={
                     selectProducts.includes(product.id as string) ? true : false
@@ -304,7 +302,7 @@ const ProductPage = (props: Props) => {
                   onSelectCheckBox={() =>
                     onSelectCheckBox(product.id as string)
                   }
-                />
+                /> */}
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center gap-2">
                     <ImageCus

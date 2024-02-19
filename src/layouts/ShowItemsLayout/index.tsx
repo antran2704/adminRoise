@@ -4,7 +4,6 @@ import { IoIosAdd } from "react-icons/io";
 
 import Popup from "~/components/Popup";
 import Pagination from "~/components/Pagination";
-
 import { IPagination } from "~/interface/pagination";
 
 interface Props {
@@ -72,8 +71,8 @@ const ShowItemsLayout = (props: Props) => {
         {children}
 
         {pagination.totalItems > pagination.pageSize && (
-            <Pagination pagination={pagination} />
-          )}
+          <Pagination pagination={pagination} />
+        )}
       </Fragment>
 
       {showPopup && selectItem?.id && handlePopup && (

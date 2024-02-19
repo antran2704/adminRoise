@@ -17,13 +17,19 @@ import {
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 
 import FormLayout from "~/layouts/FormLayout";
-import { InputNumber, InputText, InputTextDebouce, InputTextarea } from "~/components/InputField";
+import {
+  InputNumber,
+  InputText,
+  InputTextDebouce,
+  InputTextarea,
+} from "~/components/InputField";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import MultipleValue from "~/components/InputField/MultipleValue";
 import { SelectItem } from "~/components/Select";
 import Loading from "~/components/Loading";
 import Popup from "~/components/Popup";
 import {
+  deleteProduct,
   getCategories,
   getColours,
   getProduct,
@@ -86,7 +92,12 @@ const ProductEditPage = (props: Props) => {
   const [tags, setTags] = useState<ISelectItem[]>([]);
 
   const [gallery, setGallery] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+
+  const handlePopup = () => {
+    setShowPopup(!showPopup);
+  };
 
   const changeTags = (name: string, values: ISelectItem[]) => {
     setTags(values);
@@ -168,15 +179,6 @@ const ProductEditPage = (props: Props) => {
 
   const changePrice = useCallback(
     (name: string, value: number) => {
-      if (name === "promotion_price" && product.price <= value) {
-        setFieldsCheck([...fieldsCheck, "promotion_price"]);
-        toast.error("Promotion price must less than default price", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-
-        return;
-      }
-
       if (fieldsCheck.includes(name)) {
         const newFieldsCheck = handleRemoveCheck(fieldsCheck, name);
         setFieldsCheck(newFieldsCheck);
@@ -209,6 +211,25 @@ const ProductEditPage = (props: Props) => {
       router.push(`#${fields[0]}`);
     }
     return fields;
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!id || !product) return;
+
+    try {
+      await deleteProduct(product.id as string);
+      router.push("/products");
+      toast.success("Xóa sản phẩm thành công", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    } catch (error) {
+      toast.error("Error delete product", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      console.log(error);
+    }
+
+    setShowPopup(false);
   };
 
   const removeFieldImage = (index: number) => {
@@ -273,11 +294,10 @@ const ProductEditPage = (props: Props) => {
       return;
     }
 
-    // setLoading(true);
+    setLoading(true);
 
     const sendTags: string[] = tags.map((tag: ISelectItem) => tag.name);
     const sendImages: IImageProduct[] = getImagesSend(gallery);
-    console.log(sendImages);
     try {
       const sendData: ICreateProduct = {
         name: product.name,
@@ -302,14 +322,17 @@ const ProductEditPage = (props: Props) => {
       };
 
       await updateProduct(id as string, sendData);
-
-      setLoading(false);
+      toast.success("Cập nhật sản phẩm thành công", {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+      router.push("/products");
     } catch (error) {
       toast.error("Error in create product", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   const handleGetSizes = async () => {
@@ -340,6 +363,8 @@ const ProductEditPage = (props: Props) => {
   };
 
   const handleGetProduct = async () => {
+    setLoading(true);
+
     try {
       const res = await getProduct(id as string);
       if (res) {
@@ -359,6 +384,8 @@ const ProductEditPage = (props: Props) => {
     } catch (error) {
       console.log(error);
     }
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -635,7 +662,34 @@ const ProductEditPage = (props: Props) => {
           </div>
         )}
 
+        <div className="lg:w-2/4 w-full grid grid-cols-1 mt-5 lg:gap-5 gap-3">
+          <button onClick={handlePopup} className="w-fit text-lg text-white font-medium bg-error px-5 py-1 rounded-md">
+            Delete
+          </button>
+        </div>
+
         {loading && <Loading />}
+
+        {showPopup && (
+          <Popup title="Xác nhận xóa sản phẩm" show={showPopup} onClose={handlePopup}>
+            <div>
+              <div className="flex lg:flex-nowrap flex-wrap items-center justify-between mt-5 lg:gap-5 gap-2">
+                <button
+                  onClick={handlePopup}
+                  className="lg:w-fit w-full text-lg font-medium bg-[#e2e2e2] px-5 py-1 opacity-90 hover:opacity-100 rounded-md transition-cus"
+                >
+                  Cancle
+                </button>
+                <button
+                  onClick={handleDeleteProduct}
+                  className="lg:w-fit w-full text-lg text-white font-medium bg-error px-5 py-1 opacity-90 hover:opacity-100 rounded-md"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </Popup>
+        )}
       </div>
     </FormLayout>
   );

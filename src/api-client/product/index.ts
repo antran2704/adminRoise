@@ -50,7 +50,7 @@ const uploadThumbnailProduct = async (formData: FormData) => {
 };
 
 const deleteProduct = async (product_id: string) => {
-  return await axiosDelete(`/admin/products/${product_id}`);
+  return await axiosDelete(`/product/${product_id}`);
 };
 
 export {

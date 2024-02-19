@@ -10,7 +10,12 @@ import {
   IImageProduct,
 } from "~/interface";
 import FormLayout from "~/layouts/FormLayout";
-import { InputText, InputNumber, InputTextarea, InputTextDebouce } from "~/components/InputField";
+import {
+  InputText,
+  InputNumber,
+  InputTextarea,
+  InputTextDebouce,
+} from "~/components/InputField";
 import ButtonCheck from "~/components/Button/ButtonCheck";
 import { handleCheckFields, handleRemoveCheck } from "~/helper/checkFields";
 import MultipleValue from "~/components/InputField/MultipleValue";
@@ -306,14 +311,13 @@ const CreateProductPage = () => {
       };
 
       await createProduct(sendData);
-
-      setLoading(false);
+      router.push("/products");
     } catch (error) {
       toast.error("Error in create product", {
         position: toast.POSITION.TOP_RIGHT,
       });
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   const handleGetSizes = async () => {
