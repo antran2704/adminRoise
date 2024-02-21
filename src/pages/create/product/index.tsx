@@ -156,6 +156,7 @@ const CreateProductPage = () => {
 
   const onSelectCategory = useCallback(
     (item: ISelectItem) => {
+      console.log(fieldsCheck)
       if (fieldsCheck.includes("category")) {
         const newFieldsCheck = handleRemoveCheck(fieldsCheck, "category");
         setFieldsCheck(newFieldsCheck);
@@ -163,7 +164,7 @@ const CreateProductPage = () => {
 
       setSelectCategory(item as ICategory);
     },
-    [categories, selectCategory]
+    [categories, selectCategory, fieldsCheck]
   );
 
   const changeValue = useCallback(

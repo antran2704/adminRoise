@@ -27,12 +27,21 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
     setLoading(true);
 
     try {
-      const { status, payload } = await getUser();
+      const res = await getUser();
 
-      if (status === 200) {
-        dispatch(loginReducer(payload));
+      if (res.code === 401 || res.code === 404) {
+        router.push("/login");
         setLoading(false);
+        return;
       }
+
+      const dataRes = {
+        email: res.email,
+        name: res.fullName,
+      };
+
+      dispatch(loginReducer(dataRes));
+      setLoading(false);
     } catch (err) {
       router.push("/login");
     }
@@ -41,10 +50,10 @@ const DefaultLayout: FC<Props> = ({ children }: Props) => {
   useEffect(() => {
     injectStore(dispatch);
 
-    // if (!infor._id) {
-    //   checkAuth();
-    //   return;
-    // }
+    if (!infor.email) {
+      checkAuth();
+      return;
+    }
     setLoading(false);
   }, []);
 

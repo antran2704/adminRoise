@@ -42,8 +42,8 @@ const AttributesPage = (props: Props) => {
   const [attributes, setAttribute] = useState<IAttribute[]>([]);
   const [selectAttributes, setSelectAttributes] = useState<string[]>([]);
 
-  const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [message, setMessage] = useState<string | null>("Feature is locking 😟");
+  const [loading, setLoading] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectAttribute>(initSelect);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
@@ -210,25 +210,25 @@ const AttributesPage = (props: Props) => {
     }
   }, [selectItem]);
 
-  useEffect(() => {
-    if (filter) {
-      handleGetDataByFilter();
-    } else {
-      handleGetData();
-    }
-  }, [currentPage]);
+  // useEffect(() => {
+  //   if (filter) {
+  //     handleGetDataByFilter();
+  //   } else {
+  //     handleGetData();
+  //   }
+  // }, [currentPage]);
 
-  useEffect(() => {
-    if (selectAttributes.length > 0) {
-      setSelectAttributes([]);
-    }
-  }, [attributes, currentPage]);
+  // useEffect(() => {
+  //   if (selectAttributes.length > 0) {
+  //     setSelectAttributes([]);
+  //   }
+  // }, [attributes, currentPage]);
 
   return (
     <ShowItemsLayout
       title="Attributes"
       titleCreate="Create attribute"
-      link="/create/attribute"
+      link="/"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
         id: selectItem?.id || null,

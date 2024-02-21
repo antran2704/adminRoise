@@ -47,52 +47,52 @@ const options = {
 
 const MONTHS: ISelectItem[] = [
   {
-    _id: "1",
-    title: "1",
+    id: "1",
+    name: "1",
   },
   {
-    _id: "2",
-    title: "2",
+    id: "2",
+    name: "2",
   },
   {
-    _id: "3",
-    title: "3",
+    id: "3",
+    name: "3",
   },
   {
-    _id: "4",
-    title: "4",
+    id: "4",
+    name: "4",
   },
   {
-    _id: "5",
-    title: "5",
+    id: "5",
+    name: "5",
   },
   {
-    _id: "6",
-    title: "6",
+    id: "6",
+    name: "6",
   },
   {
-    _id: "7",
-    title: "7",
+    id: "7",
+    name: "7",
   },
   {
-    _id: "8",
-    title: "8",
+    id: "8",
+    name: "8",
   },
   {
-    _id: "9",
-    title: "9",
+    id: "9",
+    name: "9",
   },
   {
-    _id: "10",
-    title: "10",
+    id: "10",
+    name: "10",
   },
   {
-    _id: "11",
-    title: "11",
+    id: "11",
+    name: "11",
   },
   {
-    _id: "12",
-    title: "12",
+    id: "12",
+    name: "12",
   },
 ];
 
@@ -117,8 +117,8 @@ const initSelectGrowMonth: ISelectGrowMonth = {
 
 const initYears: ISelectItem[] = [
   {
-    _id: new Date().getFullYear().toString(),
-    title: new Date().getFullYear().toString(),
+    id: new Date().getFullYear().toString(),
+    name: new Date().getFullYear().toString(),
   },
 ];
 
@@ -151,18 +151,18 @@ const IncomeMonthPage = () => {
   const [selectGrowMonth, setSelectGrowMonth] =
     useState<ISelectGrowMonth>(initSelectGrowMonth);
 
-  const onChangeGrowMonth = (value: string, name: string) => {
+  const onChangeGrowMonth = (value: ISelectItem, name: string) => {
     if (name === "year") {
-      handleGetGrossMonth(selectGrowMonth.month, value);
-      handleGetGrossInMonth(selectGrowMonth.month, value);
+      handleGetGrossMonth(selectGrowMonth.month, value.name);
+      handleGetGrossInMonth(selectGrowMonth.month, value.name);
     }
 
     if (name === "month") {
-      handleGetGrossMonth(value, selectGrowMonth.year);
-      handleGetGrossInMonth(value, selectGrowMonth.year);
+      handleGetGrossMonth(value.name, selectGrowMonth.year);
+      handleGetGrossInMonth(value.name, selectGrowMonth.year);
     }
 
-    setSelectGrowMonth({ ...selectGrowMonth, [name]: value });
+    setSelectGrowMonth({ ...selectGrowMonth, [name]: value.name });
   };
 
   const handleGetGrossMonth = async (month: string, year: string) => {
@@ -218,8 +218,8 @@ const IncomeMonthPage = () => {
     const { status, payload } = await axiosGet("/gross-year?year=1");
     if (status === 200 && payload.length > 0) {
       const items: ISelectItem[] = payload.map((item: any) => ({
-        _id: item.year,
-        title: item.year,
+        id: item.year,
+        name: item.year,
       }));
 
       setYears(items);

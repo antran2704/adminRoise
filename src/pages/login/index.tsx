@@ -54,15 +54,15 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const { status, payload } = await axiosPost("/admin/login", data);
+      const res = await axiosPost("/oauth/access-token", data);
 
-      if (status === 200) {
-        dispatch(loginReducer(payload));
-        dispatch(logoutReducer(false))
-        router.push("/");
-      }
-
-      setLoading(false);
+      const dataRes = {
+        name: res.name,
+        email: res.email,
+      };
+      dispatch(loginReducer(dataRes));
+      dispatch(logoutReducer(false));
+      router.push("/");
     } catch (err) {
       const error = err as AxiosError;
       if (error?.response) {
@@ -70,7 +70,7 @@ const LoginPage = () => {
           error.response as unknown as AxiosResponseCus;
 
         if (status === 400) {
-          setMessage(responseErr.message);
+          setMessage("Something wrong");
         }
 
         if (status === 401 || status === 404) {
@@ -78,19 +78,21 @@ const LoginPage = () => {
           setData({ ...data, password: null });
         }
       }
-
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   const handleCheckLogin = async () => {
     try {
-      const { status, payload } = await getUser();
+      const res = await getUser();
+      const dataRes = {
+        name: res.fullName,
+        email: res.email,
+      };
 
-      if (status === 200) {
-        router.push("/");
-        dispatch(loginReducer(payload));
-      }
+      router.push("/");
+      dispatch(loginReducer(dataRes));
     } catch (error) {
       setCheckLogin(false);
     }
@@ -116,6 +118,7 @@ const LoginPage = () => {
           <ImageCus
             src="/login_bg.svg"
             title="Login"
+            alt="Login"
             className="w-[500px] h-[600px]"
           />
         </div>
@@ -161,7 +164,7 @@ const LoginPage = () => {
               <div className="flex items-center justify-center">
                 <Link
                   className="block hover:underline hover:text-primary my-5"
-                  href="/password/reset"
+                  href="/"
                 >
                   Quên mật khẩu
                 </Link>

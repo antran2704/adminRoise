@@ -41,8 +41,8 @@ const CategoriesPage = (props: Props) => {
   const [categories, setCategories] = useState<IDataCategory[]>([]);
   const [selectCategories, setSelectCategories] = useState<string[]>([]);
 
-  const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [message, setMessage] = useState<string | null>("Feature is locking 😟");
+  const [loading, setLoading] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCategory | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
@@ -120,7 +120,7 @@ const CategoriesPage = (props: Props) => {
     setLoading(true);
 
     try {
-      const response = await getCategories(currentPage);
+      const response = await getCategories();
       if (response.status === 200) {
         if (response.payload.length === 0) {
           setCategories([]);
@@ -226,25 +226,25 @@ const CategoriesPage = (props: Props) => {
     }
   }, [selectItem]);
 
-  useEffect(() => {
-    if (filter) {
-      handleGetDataByFilter();
-    } else {
-      handleGetData();
-    }
-  }, [currentPage]);
+  // useEffect(() => {
+  //   if (filter) {
+  //     handleGetDataByFilter();
+  //   } else {
+  //     handleGetData();
+  //   }
+  // }, [currentPage]);
 
-  useEffect(() => {
-    if (selectCategories.length > 0) {
-      setSelectCategories([]);
-    }
-  }, [categories, currentPage]);
+  // useEffect(() => {
+  //   if (selectCategories.length > 0) {
+  //     setSelectCategories([]);
+  //   }
+  // }, [categories, currentPage]);
 
   return (
     <ShowItemsLayout
       title="Categories"
       titleCreate="Create category"
-      link="/create/category"
+      link="/"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
         id: selectItem?.id || null,

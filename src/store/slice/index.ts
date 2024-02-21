@@ -9,10 +9,10 @@ interface IInitData {
 
 const initialState: IInitData = {
   infor: {
-    _id: null,
+    // _id: null,
     name: "",
     email: "",
-    avartar: null,
+    // avartar: null,
   },
   logout: false,
 };

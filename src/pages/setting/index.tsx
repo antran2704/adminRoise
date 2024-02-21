@@ -29,7 +29,7 @@ const SettingPage = () => {
   const { infor } = useAppSelector((state) => state.user);
   const [user, setUser] = useState<IUserInfor>(infor);
   const [passwordData, setPasswordData] = useState<IPassword>(initPassword);
-  const [avartar, setAvartar] = useState<string | null>(infor.avartar);
+  // const [avartar, setAvartar] = useState<string | null>(infor.avartar);
 
   const [loadingAvartar, setLoadingAvartar] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,148 +53,148 @@ const SettingPage = () => {
     [user]
   );
 
-  const uploadAvartar = useCallback(
-    async (source: File) => {
-      if (source) {
-        const formData: FormData = new FormData();
-        formData.append("image", source);
-        setLoadingAvartar(true);
+  // const uploadAvartar = useCallback(
+  //   async (source: File) => {
+  //     if (source) {
+  //       const formData: FormData = new FormData();
+  //       formData.append("image", source);
+  //       setLoadingAvartar(true);
 
-        try {
-          const { status, payload } = await uploadImageOnServer(
-            `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/avartar`,
-            formData
-          );
+  //       try {
+  //         const { status, payload } = await uploadImageOnServer(
+  //           `${process.env.NEXT_PUBLIC_ENDPOINT_API}/admin/avartar`,
+  //           formData
+  //         );
 
-          if (status === 201) {
-            setAvartar(payload);
-          }
-        } catch (error) {
-          toast.error("Upload avartar failed", {
-            position: toast.POSITION.TOP_RIGHT,
-          });
-          console.log(error);
-        }
+  //         if (status === 201) {
+  //           setAvartar(payload);
+  //         }
+  //       } catch (error) {
+  //         toast.error("Upload avartar failed", {
+  //           position: toast.POSITION.TOP_RIGHT,
+  //         });
+  //         console.log(error);
+  //       }
 
-        setLoadingAvartar(false);
-      }
-    },
-    [avartar, loadingAvartar]
-  );
+  //       setLoadingAvartar(false);
+  //     }
+  //   },
+  //   [avartar, loadingAvartar]
+  // );
 
-  const handleChangePassword = async () => {
-    const { password, newPassword, reNewPassword } = passwordData;
-    if (!password || !newPassword || !reNewPassword) {
-      toast.error("Vui lòng nhập đầy đủ  thông tin", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+  // const handleChangePassword = async () => {
+  //   const { password, newPassword, reNewPassword } = passwordData;
+  //   if (!password || !newPassword || !reNewPassword) {
+  //     toast.error("Vui lòng nhập đầy đủ  thông tin", {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
 
-      return;
-    }
+  //     return;
+  //   }
 
-    if (newPassword !== reNewPassword) {
-      setPasswordData({ ...passwordData, reNewPassword: null });
-      toast.error("Vui lòng nhập lại mật khâủ mới", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+  //   if (newPassword !== reNewPassword) {
+  //     setPasswordData({ ...passwordData, reNewPassword: null });
+  //     toast.error("Vui lòng nhập lại mật khâủ mới", {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
 
-      return;
-    }
+  //     return;
+  //   }
 
-    try {
-      const sendData = {
-        email: user.email,
-        password,
-        newPassword,
-      };
+  //   try {
+  //     const sendData = {
+  //       email: user.email,
+  //       password,
+  //       newPassword,
+  //     };
 
-      const { status } = await axiosPost("/admin/changePassword", sendData);
+  //     const { status } = await axiosPost("/admin/changePassword", sendData);
 
-      if (status === 201) {
-        onShowPopup();
-        toast.success("Thay đổi thành công", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setPasswordData(initPassword);
-      }
-    } catch (err) {
-      const error = err as AxiosError;
+  //     if (status === 201) {
+  //       onShowPopup();
+  //       toast.success("Thay đổi thành công", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
+  //       setPasswordData(initPassword);
+  //     }
+  //   } catch (err) {
+  //     const error = err as AxiosError;
 
-      if (!error.response) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+  //     if (!error.response) {
+  //       toast.error("Server is busy, please try again", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
 
-        return;
-      }
-      const { status } = error.response;
+  //       return;
+  //     }
+  //     const { status } = error.response;
 
-      if (status === 500) {
-        toast.error("Server is busy, please try again", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+  //     if (status === 500) {
+  //       toast.error("Server is busy, please try again", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
 
-        return;
-      }
+  //       return;
+  //     }
 
-      if (status === 401) {
-        toast.error("Mật khẩu không đúng", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
-        setPasswordData(initPassword);
-        return;
-      }
+  //     if (status === 401) {
+  //       toast.error("Mật khẩu không đúng", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
+  //       setPasswordData(initPassword);
+  //       return;
+  //     }
 
-      if (status === 400) {
-        toast.error("Thay đổi không thành công", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+  //     if (status === 400) {
+  //       toast.error("Thay đổi không thành công", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
 
-        return;
-      }
+  //       return;
+  //     }
 
-      console.log(error);
-    }
-  };
+  //     console.log(error);
+  //   }
+  // };
 
-  const handleOnSubmit = async () => {
-    setLoading(true);
+  // const handleOnSubmit = async () => {
+  //   setLoading(true);
 
-    try {
-      const { status, payload } = await axiosPatch(`/admin/${user._id}`, {
-        name: user.name ? user.name : infor.name,
-        email: user.email ? user.email : infor.email,
-        avartar,
-      });
+  //   try {
+  //     const { status, payload } = await axiosPatch(`/admin/${user._id}`, {
+  //       name: user.name ? user.name : infor.name,
+  //       email: user.email ? user.email : infor.email,
+  //       avartar,
+  //     });
 
-      if (status !== 201) {
-        toast.error("Upload setting failed", {
-          position: toast.POSITION.TOP_RIGHT,
-        });
+  //     if (status !== 201) {
+  //       toast.error("Upload setting failed", {
+  //         position: toast.POSITION.TOP_RIGHT,
+  //       });
 
-        return;
-      }
+  //       return;
+  //     }
 
-      toast.success("Upload setting success", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
+  //     toast.success("Upload setting success", {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
 
-      dispatch(loginReducer(payload));
-    } catch (error) {
-      toast.error("Upload setting failed", {
-        position: toast.POSITION.TOP_RIGHT,
-      });
-      console.log(error);
-    }
+  //     dispatch(loginReducer(payload));
+  //   } catch (error) {
+  //     toast.error("Upload setting failed", {
+  //       position: toast.POSITION.TOP_RIGHT,
+  //     });
+  //     console.log(error);
+  //   }
 
-    setLoading(false);
-  };
+  //   setLoading(false);
+  // };
 
   return (
     <FormLayout
       title="Quản lý tài khoản"
       backLink="/"
-      onSubmit={handleOnSubmit}
+      onSubmit={() => {}}
     >
       <div>
         <div className="my-5">
@@ -215,13 +215,13 @@ const SettingPage = () => {
         <InputText
           title="Name"
           width="lg:w-2/4 w-full my-5"
-          value={user.name}
+          value={user.name || ""}
           name="name"
           placeholder="Your Name..."
           getValue={changeValue}
         />
 
-        <div className="my-5">
+        {/* <div className="my-5">
           <span className="block text-base text-[#1E1E1E] font-medium">
             Password
           </span>
@@ -240,11 +240,11 @@ const SettingPage = () => {
             loading={loadingAvartar}
             onChange={uploadAvartar}
           />
-        </div>
+        </div> */}
 
         {loading && <Loading />}
 
-        {showPopup && (
+        {/* {showPopup && (
           <Popup
             title="Thay đổi mật khẩu"
             show={showPopup}
@@ -295,7 +295,7 @@ const SettingPage = () => {
               </div>
             </div>
           </Popup>
-        )}
+        )} */}
       </div>
     </FormLayout>
   );

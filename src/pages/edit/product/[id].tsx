@@ -163,7 +163,7 @@ const ProductEditPage = (props: Props) => {
 
       setSelectCategory(item as ICategory);
     },
-    [categories, selectCategory]
+    [categories, selectCategory, fieldsCheck]
   );
 
   const changeValue = useCallback(

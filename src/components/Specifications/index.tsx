@@ -134,7 +134,7 @@ const Specifications = (props: Props) => {
     specificationIndex: number,
     attributeIndex: number
   ) => {
-    const newSpecifications = specifications;
+    const newSpecifications: any = specifications;
     newSpecifications[specificationIndex].attributes[attributeIndex][name] =
       value;
 

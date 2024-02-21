@@ -64,7 +64,7 @@ const Navbar: FC = () => {
           <BsArrowLeft className="text-3xl" />
         </button>
 
-        {infor?._id && (
+        {/* {infor?._id && (
           <div className="h-20 flex items-center gap-3">
             <ImageCus
               src={infor.avartar as string}
@@ -74,7 +74,7 @@ const Navbar: FC = () => {
             />
             <h2 className="text-black text-xl font-medium">{infor.name}</h2>
           </div>
-        )}
+        )} */}
         <div className="h-[60%] py-3 overflow-hidden">
           <h3 className="text-black text-lg font-medium mb-3">Menu</h3>
           <ul className="scroll h-full pb-7 overflow-auto">

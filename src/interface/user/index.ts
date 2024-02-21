@@ -1,8 +1,8 @@
 interface IUserInfor {
-  _id: string | null;
-  name: string;
+  // _id: string | null;
+  name: string | null;
   email: string;
-  avartar: string | null;
+  // avartar: string | null;
 }
 
 export type { IUserInfor };

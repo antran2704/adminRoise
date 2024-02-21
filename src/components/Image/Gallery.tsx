@@ -77,7 +77,7 @@ const Gallery: FC<Props> = (props: Props) => {
               </div>
             </div>
 
-            <ImageCus src={url} className="w-full h-full" />
+            <ImageCus title="gallery" src={url} className="w-full h-full" />
           </li>
         ))}
 

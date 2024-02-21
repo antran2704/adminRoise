@@ -200,18 +200,18 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    const firstDay = getFirstDayInWeek(new Date().toDateString());
-    handleGetGrossInWeek(firstDay);
-    handleGetOverviews();
-    handleGetData();
-  }, []);
+  // useEffect(() => {
+  //   const firstDay = getFirstDayInWeek(new Date().toDateString());
+  //   handleGetGrossInWeek(firstDay);
+  //   handleGetOverviews();
+  //   handleGetData();
+  // }, []);
 
   return (
     <section className="scrollHidden relative flex flex-col items-start w-full h-full px-5 pb-5 pt-5 overflow-auto gap-5">
       <div className="w-full h-[10%] mb-5">
         <h1 className="md:text-3xl text-2xl font-bold mb-1">
-          Welcome Admin Dashboard Antrandev
+          Welcome Admin Dashboard
         </h1>
         <p className="text-lg font-medium">
           Manager your maketing's performence

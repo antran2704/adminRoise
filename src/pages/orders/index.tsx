@@ -24,31 +24,31 @@ interface Props {
 
 const dataFilterStatus: ISelectItem[] = [
   {
-    _id: "delivered",
-    title: "delivered",
+    id: "delivered",
+    name: "delivered",
   },
   {
-    _id: "pending",
-    title: "pending",
+    id: "pending",
+    name: "pending",
   },
   {
-    _id: "cancle",
-    title: "cancle",
+    id: "cancle",
+    name: "cancle",
   },
   {
-    _id: "processing",
-    title: "processing",
+    id: "processing",
+    name: "processing",
   },
 ];
 
 const dataFilterMethod: ISelectItem[] = [
   {
-    _id: "cash",
-    title: "Cash",
+    id: "cash",
+    name: "Cash",
   },
   {
-    _id: "card",
-    title: "Card",
+    id: "card",
+    name: "Card",
   },
 ];
 
@@ -58,9 +58,9 @@ const OrdersPage = (props: Props) => {
   const router = useRouter();
 
   const [orders, setOrders] = useState<IOrder[]>([]);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>("Feature is locking 😟");
   const [filter, setFilter] = useState<IFilter | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
 
   const onChangeSearch = useCallback(
@@ -71,6 +71,16 @@ const OrdersPage = (props: Props) => {
   );
 
   const onSelect = useCallback(
+    (value: ISelectItem, name: string) => {
+      setFilter({ ...filter, [name]: value.name });
+      router.replace({
+        query: {},
+      });
+    },
+    [filter]
+  );
+
+  const onSelectDate = useCallback(
     (value: string, name: string) => {
       setFilter({ ...filter, [name]: value });
       router.replace({
@@ -135,13 +145,13 @@ const OrdersPage = (props: Props) => {
     }
   };
 
-  useEffect(() => {
-    if (filter) {
-      handleGetDataByFilter();
-    } else {
-      handleGetData();
-    }
-  }, [currentPage]);
+  // useEffect(() => {
+  //   if (filter) {
+  //     handleGetDataByFilter();
+  //   } else {
+  //     handleGetData();
+  //   }
+  // }, [currentPage]);
 
   return (
     <ShowItemsLayout
@@ -181,7 +191,7 @@ const OrdersPage = (props: Props) => {
               name="start_date"
               value={filter?.start_date || ""}
               type="date"
-              onSelect={onSelect}
+              onSelect={onSelectDate}
             />
             <SelectDate
               className="lg:w-2/12 md:w-4/12 w-full"
@@ -189,7 +199,7 @@ const OrdersPage = (props: Props) => {
               name="end_date"
               value={filter?.end_date || ""}
               type="date"
-              onSelect={onSelect}
+              onSelect={onSelectDate}
             />
           </Fragment>
         </Search>

@@ -329,14 +329,14 @@ const ProductPage = (props: Props) => {
                   center={true}
                   value={
                     product.wholesalePrice
-                      ? formatBigNumber(product.wholesalePrice)
+                      ? `${formatBigNumber(product.wholesalePrice)} VND`
                       : "0"
                   }
                 />
                 <CelTable
                   type={typeCel.TEXT}
                   center={true}
-                  value={formatBigNumber(product.specialPrice)}
+                  value={`${formatBigNumber(product.specialPrice)} VND`}
                 />
                 <CelTable
                   id={product.id as string}

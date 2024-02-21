@@ -68,7 +68,7 @@ const CreateAttributePage = () => {
 
   const generateAttributes = (attributes: ISelectItem[]) => {
     return attributes.map((attribute) => ({
-      name: attribute.title,
+      name: attribute.name,
       public: true,
     }));
   };

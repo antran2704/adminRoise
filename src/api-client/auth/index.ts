@@ -1,11 +1,11 @@
 import { axiosGet, axiosPost } from "~/ultils/configAxios";
 
 const getUser = async () => {
-  return await axiosGet("/admin");
+  return await axiosGet("/oauth/user-profile");
 };
 
 const logout = async () => {
-  return await axiosPost("/admin/logout", {});
+  return await axiosPost("/oauth/logout", {});
 }
 
 const getRefreshToken = async () => {

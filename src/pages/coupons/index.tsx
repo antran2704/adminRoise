@@ -43,8 +43,8 @@ const CouponsPage = (props: Props) => {
   const [coupons, setCoupons] = useState<ICouponHome[]>([]);
   const [selectCoupons, setSelectCoupons] = useState<string[]>([]);
 
-  const [message, setMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [message, setMessage] = useState<string | null>("Feature is locking 😟");
+  const [loading, setLoading] = useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [selectItem, setSelectItem] = useState<ISelectCoupon | null>(null);
   const [pagination, setPagination] = useState<IPagination>(initPagination);
@@ -250,25 +250,25 @@ const CouponsPage = (props: Props) => {
     }
   }, [selectItem]);
 
-  useEffect(() => {
-    if (filter) {
-      handleGetDataByFilter();
-    } else {
-      handleGetData();
-    }
-  }, [currentPage]);
+  // useEffect(() => {
+  //   if (filter) {
+  //     handleGetDataByFilter();
+  //   } else {
+  //     handleGetData();
+  //   }
+  // }, [currentPage]);
 
-  useEffect(() => {
-    if (selectCoupons.length > 0) {
-      setSelectCoupons([]);
-    }
-  }, [coupons, currentPage]);
+  // useEffect(() => {
+  //   if (selectCoupons.length > 0) {
+  //     setSelectCoupons([]);
+  //   }
+  // }, [coupons, currentPage]);
 
   return (
     <ShowItemsLayout
       title="Coupons"
       titleCreate="Create Coupons"
-      link="/create/coupon"
+      link="/"
       selectItem={{
         title: selectItem?.title ? selectItem.title : "",
         id: selectItem?.id || null,
@@ -333,6 +333,7 @@ const CouponsPage = (props: Props) => {
                   <div className="flex items-center gap-2">
                     <ImageCus
                       title="product image"
+                      alt="product image"
                       src={item.discount_thumbnail as string}
                       className="min-w-[32px] w-8 h-8 rounded-full"
                     />

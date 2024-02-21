@@ -45,29 +45,29 @@ const listBody: itemNav[] = [
     path: "/orders",
     icon: <AiOutlineShoppingCart />,
   },
-  {
-    name: "Income",
-    path: "/",
-    icon: <BiDollarCircle />,
-    children: [
-      {
-        name: "Date",
-        path: "/incomes/date",
-      },
-      {
-        name: "Week",
-        path: "/incomes/week",
-      },
-      {
-        name: "Month",
-        path: "/incomes/month",
-      },
-      {
-        name: "Year",
-        path: "/incomes/year",
-      },
-    ],
-  },
+  // {
+  //   name: "Income",
+  //   path: "/",
+  //   icon: <BiDollarCircle />,
+  //   children: [
+  //     {
+  //       name: "Date",
+  //       path: "/incomes/date",
+  //     },
+  //     {
+  //       name: "Week",
+  //       path: "/incomes/week",
+  //     },
+  //     {
+  //       name: "Month",
+  //       path: "/incomes/month",
+  //     },
+  //     {
+  //       name: "Year",
+  //       path: "/incomes/year",
+  //     },
+  //   ],
+  // },
   {
     name: "Customers",
     path: "/customer",

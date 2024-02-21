@@ -1,8 +1,8 @@
 import { useRef, useEffect, Fragment, memo, useState } from "react";
 
 interface Props {
-  title: string;
-  alt: string;
+  title?: string;
+  alt?: string;
   src: string;
   className?: string;
 }

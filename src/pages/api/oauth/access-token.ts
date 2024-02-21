@@ -33,43 +33,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       proxyRes.on("end", function () {
         try {
           const response = JSON.parse(body);
-          const status = response.status;
-          
-          if (status === 200) {
-            const data: IKeyToken = {
-              accessToken: response.payload.accessToken.value,
-              refreshToken: response.payload.refreshToken.value,
-              apiKey: response.payload.apiKey,
-              publicKey: response.payload.publicKey,
-            };
-            
-            setCookie("accessToken", data.accessToken, {
+
+          if (!response.code) {
+            setCookie("accessToken", response.accessToken, {
               req,
               res,
               httpOnly: true,
-              maxAge: response.payload.accessToken.exp,
+              maxAge: response.expiresIn,
             });
-            setCookie("publicKey", data.publicKey, {
-              req,
-              res,
-              httpOnly: true,
-              maxAge: response.payload.refreshToken.exp,
-            });
-            setCookie("refreshToken", data.refreshToken, {
-              req,
-              res,
-              httpOnly: true,
-              maxAge: response.payload.refreshToken.exp,
-            });
-            setCookie("apiKey", data.apiKey, {
-              req,
-              res,
-              httpOnly: true,
-              maxAge: response.payload.refreshToken.exp,
-            });
+            res.status(200).json(response);
+          } else {
+            res.status(response.code).json(response);
           }
 
-          res.status(status).json(response);
           resolve();
         } catch (error) {
           reject(error);
