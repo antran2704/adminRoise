@@ -312,6 +312,9 @@ const CreateProductPage = () => {
       };
 
       await createProduct(sendData);
+      toast.success("Tạo sản phẩm thành công", {
+        position: toast.POSITION.BOTTOM_RIGHT,
+      });
       router.push("/products");
     } catch (error) {
       toast.error("Error in create product", {
