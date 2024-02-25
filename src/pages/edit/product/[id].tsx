@@ -323,7 +323,7 @@ const ProductEditPage = (props: Props) => {
 
       await updateProduct(id as string, sendData);
       toast.success("Cập nhật sản phẩm thành công", {
-        position: toast.POSITION.TOP_RIGHT,
+        position: toast.POSITION.BOTTOM_RIGHT,
       });
       router.push("/products");
     } catch (error) {

@@ -161,14 +161,14 @@ const LoginPage = () => {
                 className="w-full flex items-center justify-center h-[52px] bg-primary"
               />
 
-              <div className="flex items-center justify-center">
+              {/* <div className="flex items-center justify-center">
                 <Link
                   className="block hover:underline hover:text-primary my-5"
                   href="/"
                 >
                   Quên mật khẩu
                 </Link>
-              </div>
+              </div> */}
             </div>
           </form>
         </div>

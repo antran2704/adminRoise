@@ -23,7 +23,6 @@ import {
   getCategories,
   getProducts,
   searchProduct,
-  updateProduct,
 } from "~/api-client";
 
 interface ISelectProduct {
@@ -40,7 +39,7 @@ interface Props {
   query: ParsedUrlQuery;
 }
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 16;
 
 const ProductPage = (props: Props) => {
   const { query } = props;
@@ -114,28 +113,6 @@ const ProductPage = (props: Props) => {
 
     setLoading(false);
   }, [filter]);
-
-  const onChangePublic = async (id: string, status: boolean) => {
-    // if (!id) {
-    //   toast.error("False change public", {
-    //     position: toast.POSITION.TOP_RIGHT,
-    //   });
-    // }
-
-    // try {
-    //   const payload = await updateProduct(id, { public: status });
-
-    //   if (payload.status === 201) {
-    //     toast.success("Success updated product", {
-    //       position: toast.POSITION.TOP_RIGHT,
-    //     });
-    //   }
-    // } catch (error) {
-    //   toast.error("Please try again", {
-    //     position: toast.POSITION.TOP_RIGHT,
-    //   });
-    // }
-  };
 
   const onReset = useCallback(() => {
     setFilter(null);
@@ -212,10 +189,6 @@ const ProductPage = (props: Props) => {
   };
 
   useEffect(() => {
-    handleGetCategories();
-  }, []);
-
-  useEffect(() => {
     if (searchText) {
       handleGetDataByFilter();
     } else {
@@ -266,8 +239,8 @@ const ProductPage = (props: Props) => {
           onSearch={onChangeSearch}
           onFilter={handleGetDataByFilter}
           placeholder="Search by product name..."
-        >
-          <SelectItem
+        />
+          {/* <SelectItem
             width="md:w-2/12 w-full"
             title="Thư mục sản phẩm"
             name="category"
@@ -275,8 +248,7 @@ const ProductPage = (props: Props) => {
             value={selectCategory ? (selectCategory.id as string) : ""}
             onSelect={onSelectCategory}
             data={categories}
-          />
-        </Search>
+          /> */}
 
         <Table
           items={products}
@@ -338,12 +310,12 @@ const ProductPage = (props: Props) => {
                   center={true}
                   value={`${formatBigNumber(product.specialPrice)} VND`}
                 />
-                <CelTable
+                {/* <CelTable
                   id={product.id as string}
                   type={typeCel.PUBLIC}
                   checked={product.isShow}
                   onGetChecked={onChangePublic}
-                />
+                /> */}
                 <CelTable type={typeCel.GROUP}>
                   <div className="flex items-center justify-center gap-2">
                     <ButtonEdit link={`/edit/product/${product.id}`} />

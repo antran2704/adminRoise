@@ -46,7 +46,6 @@ const colHeaderProduct: string[] = [
   "Thư mục",
   "Giá sỉ",
   "Giá lẻ",
-  "Published",
   "Chỉnh sửa",
 ];
 

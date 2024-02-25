@@ -1,5 +1,5 @@
 import { AiOutlineSetting, AiOutlineShoppingCart } from "react-icons/ai";
-import { BiCategoryAlt, BiDollarCircle } from "react-icons/bi";
+import { BiCategoryAlt, BiCube } from "react-icons/bi";
 import { RxDashboard } from "react-icons/rx";
 import { ReactNode } from "react";
 import { HiOutlineUsers } from "react-icons/hi2";
@@ -13,9 +13,14 @@ export interface itemNav {
 
 const listBody: itemNav[] = [
   {
-    name: "Dashboard",
+    name: "Trang chủ",
     path: "/",
     icon: <RxDashboard />,
+  },
+  {
+    name: "Sản phẩm",
+    path: "/products",
+    icon: <BiCube />,
   },
   {
     name: "Catalog",
@@ -23,25 +28,21 @@ const listBody: itemNav[] = [
     icon: <BiCategoryAlt />,
     children: [
       {
-        name: "Categories",
+        name: "Danh mục",
         path: "/categories",
-      },
-      {
-        name: "Products",
-        path: "/products",
       },
       {
         name: "Attributes",
         path: "/attributes",
       },
       {
-        name: "Coupons",
+        name: "Mã giảm giá",
         path: "/coupons",
       },
     ],
   },
   {
-    name: "Orders",
+    name: "Đơn hàng",
     path: "/orders",
     icon: <AiOutlineShoppingCart />,
   },
@@ -69,7 +70,7 @@ const listBody: itemNav[] = [
   //   ],
   // },
   {
-    name: "Customers",
+    name: "Khách hàng",
     path: "/customer",
     icon: <HiOutlineUsers />,
   },
@@ -77,10 +78,10 @@ const listBody: itemNav[] = [
 
 const listSetting: itemNav[] = [
   {
-    name: "Setting",
+    name: "Chỉnh sửa",
     path: "/setting",
     icon: <AiOutlineSetting />,
-  }
+  },
 ];
 
 export { listBody, listSetting };
